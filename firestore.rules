@@ -1,0 +1,197 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Assumed data model: public content collections contain only website text,
+    // booleans, order numbers, and local image path strings. No image binaries
+    // or private contact details are stored in these collections.
+    // projects: title, slug, category, location, year, area, status, tagline,
+    // description, concept, materialsText, galleryText, statsText, coverImage,
+    // heroImage, featured, published, order, createdAt, updatedAt.
+    // categories: name, slug, description, published, order, createdAt, updatedAt.
+    // clients: name, website, logoPath, published, order, createdAt, updatedAt.
+    // testimonials: name, role, location, quote, rating, published, order,
+    // createdAt, updatedAt.
+    // inquiries: name, email, phone, projectType, location, budget, message,
+    // status, createdAt, optional updatedAt. Private: only admins can read.
+    // adminUsers/{uid}: enabled boolean. Provisioned manually by the project
+    // owner in Firebase Console; clients cannot create or change these records.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.enabled == true;
+    }
+
+    function required(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function only(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function boundedString(data, field, minimum, maximum) {
+      return data[field] is string
+        && data[field].size() >= minimum
+        && data[field].size() <= maximum;
+    }
+
+    function validOrder(data) {
+      return data.order is number && data.order >= 0 && data.order <= 10000;
+    }
+
+    function validSlug(data) {
+      return boundedString(data, 'slug', 1, 100)
+        && data.slug.matches('^[a-z0-9]+(-[a-z0-9]+)*$');
+    }
+
+    function validProject(data) {
+      return only(data, ['title', 'slug', 'category', 'location', 'year', 'area', 'status', 'tagline', 'description', 'concept', 'materialsText', 'galleryText', 'statsText', 'coverImage', 'heroImage', 'featured', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['title', 'slug', 'category', 'location', 'year', 'area', 'status', 'tagline', 'description', 'concept', 'materialsText', 'galleryText', 'statsText', 'coverImage', 'heroImage', 'featured', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'title', 1, 180)
+        && validSlug(data)
+        && boundedString(data, 'category', 1, 80)
+        && boundedString(data, 'location', 1, 180)
+        && boundedString(data, 'year', 0, 20)
+        && boundedString(data, 'area', 0, 80)
+        && boundedString(data, 'status', 0, 80)
+        && boundedString(data, 'tagline', 0, 240)
+        && boundedString(data, 'description', 1, 3000)
+        && boundedString(data, 'concept', 0, 2000)
+        && boundedString(data, 'materialsText', 0, 1000)
+        && boundedString(data, 'galleryText', 0, 3000)
+        && boundedString(data, 'statsText', 0, 1000)
+        && boundedString(data, 'coverImage', 0, 240)
+        && boundedString(data, 'heroImage', 0, 240)
+        && data.featured is bool
+        && data.published is bool
+        && (!data.published || (data.coverImage.size() > 0 && data.heroImage.size() > 0))
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validCategory(data) {
+      return only(data, ['name', 'slug', 'description', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'slug', 'description', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 80)
+        && validSlug(data)
+        && data.slug != 'all'
+        && boundedString(data, 'description', 0, 500)
+        && data.published is bool
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validClient(data) {
+      return only(data, ['name', 'website', 'logoPath', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'website', 'logoPath', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 120)
+        && boundedString(data, 'website', 0, 300)
+        && boundedString(data, 'logoPath', 0, 240)
+        && data.published is bool
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validTestimonial(data) {
+      return only(data, ['name', 'role', 'location', 'quote', 'rating', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'role', 'location', 'quote', 'rating', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 120)
+        && boundedString(data, 'role', 0, 120)
+        && boundedString(data, 'location', 0, 160)
+        && boundedString(data, 'quote', 1, 2400)
+        && data.rating is number
+        && data.rating >= 1
+        && data.rating <= 5
+        && data.published is bool
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validInquiry(data) {
+      return only(data, ['name', 'email', 'phone', 'projectType', 'location', 'budget', 'message', 'status', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'email', 'phone', 'projectType', 'location', 'budget', 'message', 'status', 'createdAt'])
+        && boundedString(data, 'name', 1, 100)
+        && boundedString(data, 'email', 3, 200)
+        && data.email.matches('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$')
+        && boundedString(data, 'phone', 1, 40)
+        && boundedString(data, 'projectType', 0, 80)
+        && boundedString(data, 'location', 0, 120)
+        && boundedString(data, 'budget', 0, 80)
+        && boundedString(data, 'message', 1, 3000)
+        && data.status in ['new', 'read', 'archived']
+        && data.createdAt is timestamp
+        && (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    match /adminUsers/{uid} {
+      // A signed-in user may check only their own enabled flag. No client may
+      // list users, grant roles, or change admin access.
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    match /projects/{projectId} {
+      allow read: if (isAdmin()) || resource.data.published == true;
+      allow create: if isAdmin() && validProject(request.resource.data);
+      allow update: if isAdmin()
+        && validProject(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validCategory(request.resource.data);
+      allow update: if isAdmin()
+        && validCategory(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /clients/{clientId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validClient(request.resource.data);
+      allow update: if isAdmin()
+        && validClient(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /testimonials/{testimonialId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validTestimonial(request.resource.data);
+      allow update: if isAdmin()
+        && validTestimonial(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /inquiries/{inquiryId} {
+      // Public visitors can submit a bounded message but cannot read inquiries.
+      allow create: if validInquiry(request.resource.data)
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time
+        && !('updatedAt' in request.resource.data);
+      allow read: if isAdmin();
+      allow update: if isAdmin()
+        && validInquiry(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Any collection not explicitly listed above is private by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

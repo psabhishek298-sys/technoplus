@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { FALLBACK_PROJECTS } from './data/projects.ts';
-import { GOOGLE_TESTIMONIALS } from './data/testimonials.ts';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
+import { SiteContentProvider, useSiteContent } from './firebase/SiteContentContext.jsx';
+import AdminPage from './admin/AdminPage.jsx';
 import ScrollStack, { ScrollStackItem } from './components/ScrollStack.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
 import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
@@ -14,8 +14,6 @@ import './pages.css';
 import './components/FeaturedProjects.css';
 import './components/BrandLogo.css';
 import './components/ClientLogos.css';
-
-const projects = FALLBACK_PROJECTS;
 
 function ReviewColumn({ reviews, duration, className = '' }) {
   return <div className={`reviews-column ${className}`}><div className="reviews-track" style={{ '--review-duration': `${duration}s` }}>
@@ -38,6 +36,7 @@ function Splash({ done }) {
 
 function Header() {
   const { pathname } = useLocation();
+  if (pathname === '/admin') return null;
   const lightHeader = pathname === '/' || (pathname.startsWith('/projects/') && pathname !== '/projects');
   return <header className={`header ${lightHeader ? 'header-light' : ''}`}>
     <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link>
@@ -59,9 +58,10 @@ function Hero() {
 }
 
 function HomePage() {
+  const { projects, testimonials } = useSiteContent();
   const featured = projects.filter(p => p.featured).slice(0, 6);
-  const reviewColumnSize = Math.ceil(GOOGLE_TESTIMONIALS.length / 3);
-  const reviewColumns = [GOOGLE_TESTIMONIALS.slice(0, reviewColumnSize), GOOGLE_TESTIMONIALS.slice(reviewColumnSize, reviewColumnSize * 2), GOOGLE_TESTIMONIALS.slice(reviewColumnSize * 2)];
+  const reviewColumnSize = Math.ceil(testimonials.length / 3);
+  const reviewColumns = [testimonials.slice(0, reviewColumnSize), testimonials.slice(reviewColumnSize, reviewColumnSize * 2), testimonials.slice(reviewColumnSize * 2)];
   return <main><Hero/>
     <section className="intro section-pad" id="intro"><div className="eyebrow"><span className="eyebrow-dot"/> Independent architecture practice <span className="eyebrow-line"/></div><div className="intro-content"><h1>We design <em>thoughtful spaces</em> for people and place.</h1><div className="intro-aside"><p>Techno Plus Associates is an architecture practice established in 1990. We create functional, beautiful spaces shaped by the people who use them and the places they belong to.</p><Link className="text-link" to="/about">Discover our practice <ArrowRight/></Link></div></div><div className="intro-image"><img src="/photos/aboutimg.png" alt="Techno Plus architecture project" loading="lazy"/><span>Spaces that connect people, place and purpose.</span></div></section>
     <section className="projects section-pad" id="projects"><div className="section-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work / Kerala</span><h2>Featured<br/><em>Projects</em></h2></div><div className="section-heading-side"><p>Homes, hospitality, commercial spaces and tourism destinations shaped by people and place.</p><Link className="round-link" to="/projects" aria-label="View all projects"><ArrowUpRight/></Link></div></div><ScrollStack className="featured-project-stack" useWindowScroll stackPosition="13%" itemDistance={88} itemStackDistance={26} itemScale={0.04} baseScale={0.78} dimAmount={0.24} holdDistance={220}>{featured.map((p, i) => <ScrollStackItem key={p.id} itemClassName="featured-stack-item"><Link className={`featured-project-link card-${i + 1}`} to={`/projects/${p.slug}`}><img src={p.coverImage} alt={p.title} loading={i < 2 ? 'eager' : 'lazy'}/><span className="featured-project-shade"/><span className="featured-project-number">{String(i + 1).padStart(2, '0')}</span><span className="featured-project-category">{p.category}</span><span className="featured-project-meta"><span><strong>{p.title}</strong><small>{p.location}</small></span><i><ArrowUpRight/></i></span></Link></ScrollStackItem>)}</ScrollStack></section>
@@ -71,13 +71,15 @@ function HomePage() {
       { id: '02', title: 'Interiors', location: 'Techno Plus · Malappuram', description: 'Warm, considered interiors tailored to everyday life.', src: '/photos/official-projects/office1.jpg', alt: 'Interior at the Techno Plus office', to: '/projects/technoplus-office-malappuram' },
       { id: '03', title: 'Tourism & Landscape', location: 'Kundukadavu · Kerala', description: 'Destinations and public places rooted in Kerala.', src: '/photos/official-projects/project12.jpg', alt: 'Kundukadavu tourism destination in Kerala', to: '/projects/kundukadavu-tourism-destination' },
     ]}/></section>
-    <section className="reviews section-pad"><div className="reviews-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Notes from our clients</span><h2>Words from<br/><em>the people we serve.</em></h2><p>Thoughtful feedback from the people who trusted us with their spaces.</p></div><div className="reviews-rating"><div className="reviews-google-mark">G</div><div><strong>4.8 <span>/ 5.0</span></strong><small><b>★★★★★</b> · {GOOGLE_TESTIMONIALS.length} Google reviews</small></div></div></div><div className="reviews-columns" aria-label="Client testimonials"><ReviewColumn reviews={reviewColumns[0]} duration={24}/><ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/><ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/></div></section>
+    <section className="reviews section-pad"><div className="reviews-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Notes from our clients</span><h2>Words from<br/><em>the people we serve.</em></h2><p>Thoughtful feedback from the people who trusted us with their spaces.</p></div><div className="reviews-rating"><div className="reviews-google-mark">G</div><div><strong>4.8 <span>/ 5.0</span></strong><small><b>★★★★★</b> · {testimonials.length} Google reviews</small></div></div></div><div className="reviews-columns" aria-label="Client testimonials"><ReviewColumn reviews={reviewColumns[0]} duration={24}/><ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/><ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/></div></section>
     <ClientLogoSection/>
     <section className="contact section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Start a conversation</span><Link to="/contact" className="contact-title">Let's build<br/><em>with purpose.</em><ArrowUpRight/></Link><div className="contact-bottom"><span>Have a project in mind?</span><Link to="/contact">Get in touch <ArrowRight/></Link></div></section>
   </main>;
 }
 
 function SiteFooter() {
+  const { pathname } = useLocation();
+  if (pathname === '/admin') return null;
   return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram, Kerala 676509</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919847012345">+91 98470 12345</a><a href="mailto:hello@techplus.com">hello@techplus.com</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Interiors · Landscape</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
 }
 
@@ -114,7 +116,7 @@ function MotionEnhancer() {
 function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => { const id = window.setTimeout(() => setLoading(false), 2100); return () => window.clearTimeout(id); }, []);
-  return <BrowserRouter><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></BrowserRouter>;
+  return <BrowserRouter><SiteContentProvider><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></SiteContentProvider></BrowserRouter>;
 }
 
 createRoot(document.getElementById('root')).render(<App/>);

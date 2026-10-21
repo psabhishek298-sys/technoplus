@@ -1,17 +1,13 @@
 import React from 'react';
 import { LogoLoop } from './LogoLoop.tsx';
+import { useSiteContent } from '../firebase/SiteContentContext.jsx';
 import './ClientLogos.css';
 
-const CLIENT_LOGOS = [
-  { src: '/photos/client-logos/client-01.webp', alt: 'Sree Gokulam Group', title: 'Sree Gokulam Group', height: 56 },
-  { src: '/photos/client-logos/client-02.webp', alt: 'Bhima Jewellers', title: 'Bhima Jewellers', height: 56 },
-  { src: '/photos/client-logos/client-03.png', alt: 'Wonderla', title: 'Wonderla', height: 56 },
-  { src: '/photos/client-logos/client-04.webp', alt: 'Lulu Group', title: 'Lulu Group', height: 56 },
-  { src: '/photos/client-logos/client-05.webp', alt: 'Kalyan Silks', title: 'Kalyan Silks', height: 56 },
-  { src: '/photos/client-logos/client-06.webp', alt: 'Kairali', title: 'Kairali', height: 56 },
-];
-
 export function ClientLogoSection() {
+  const { clients } = useSiteContent();
+  const logos = clients.map((client) => client.logoPath
+    ? { src: client.logoPath, alt: client.name, title: client.name, height: 56 }
+    : { node: <span className="client-logo-wordmark">{client.name}</span>, title: client.name, ariaLabel: client.name });
   return (
     <section className="client-logos section-pad" aria-labelledby="our-clients-title">
       <div className="client-logos-heading">
@@ -20,7 +16,7 @@ export function ClientLogoSection() {
         <p>Organizations we are proud to have worked with.</p>
       </div>
       <div className="client-logos-track">
-        <LogoLoop logos={CLIENT_LOGOS} speed={60} direction="left" logoHeight={56} gap={112} hoverSpeed={0} fadeOut fadeOutColor="#efe4d6" ariaLabel="Our clients"/>
+        <LogoLoop logos={logos} speed={60} direction="left" logoHeight={56} gap={112} hoverSpeed={0} fadeOut fadeOutColor="#efe4d6" ariaLabel="Our clients"/>
       </div>
     </section>
   );

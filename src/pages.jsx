@@ -1,10 +1,11 @@
 import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin } from 'lucide-react';
-import { FALLBACK_PROJECTS } from './data/projects.ts';
-import { DEFAULT_CATEGORIES } from './data/categories.ts';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
+import { useSiteContent } from './firebase/SiteContentContext.jsx';
+import { firebaseReady } from './firebase/client.js';
+import { submitInquiry } from './firebase/content.js';
 import './projects.css';
 import './components/ProcedureAnimation.css';
 
@@ -13,10 +14,12 @@ function PageHero({ kicker, title, accent, description, image, className = '' })
 }
 
 export function ProjectsPage() {
+  const { projects, categories } = useSiteContent();
   const [category, setCategory] = useState('all');
-  const visible = useMemo(() => category === 'all' ? FALLBACK_PROJECTS : FALLBACK_PROJECTS.filter(p => p.category.toLowerCase() === category.toLowerCase()), [category]);
+  const filters = [{ id: 'cat-all', name: 'All Works', slug: 'all' }, ...categories];
+  const visible = useMemo(() => category === 'all' ? projects : projects.filter(p => p.category.toLowerCase() === category.toLowerCase()), [category, projects]);
   return <main className="subpage work-index">
-    <section className="projects-filter-scene" aria-label="Featured projects and filters"><div className="projects-filter-image"/><div className="projects-filter-row">{DEFAULT_CATEGORIES.map(c => <button key={c.slug} className={category === c.slug ? 'filter-chip selected' : 'filter-chip'} onClick={() => setCategory(c.slug)}>{c.name}</button>)}</div></section>
+    <section className="projects-filter-scene" aria-label="Featured projects and filters"><div className="projects-filter-image"/><div className="projects-filter-row">{filters.map(c => <button key={c.slug} className={category === c.slug ? 'filter-chip selected' : 'filter-chip'} onClick={() => setCategory(c.slug)}>{c.name}</button>)}</div></section>
     <section className="project-wall section-pad" aria-label={`${visible.length} projects`}>
       <div className="project-wall-grid">{visible.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
         <img className="wall-card-photo" src={p.coverImage || p.heroImage} alt={p.title} loading={i < 6 ? 'eager' : 'lazy'}/><span className="wall-card-shade"/>
@@ -29,7 +32,8 @@ export function ProjectsPage() {
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
-  const project = FALLBACK_PROJECTS.find(p => p.slug === slug);
+  const { projects } = useSiteContent();
+  const project = projects.find(p => p.slug === slug);
   if (!project) return <main className="subpage"><PageHero kicker="Project" title="Project" accent="not found."/><section className="section-pad subpage-section"><Link className="text-link" to="/projects"><ArrowLeft/> Back to all projects</Link></section></main>;
   const gallery = project.gallery?.length ? project.gallery : [project.heroImage, project.coverImage].filter(Boolean);
   return <main className="subpage project-detail"><section className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(23,22,20,.55),transparent 66%),url("${project.heroImage || project.coverImage}")`}}><Link className="back-link" to="/projects"><ArrowLeft/> All projects</Link><div className="detail-title"><span className="eyebrow"><span className="eyebrow-dot"/>{project.category} · {project.year || 'Techno Plus project'}</span><h1>{project.title}</h1><span className="detail-location"><MapPin size={15}/>{project.location}</span></div></section>
@@ -81,5 +85,24 @@ export function ProcedurePage() {
 }
 
 export function ContactPage() {
-  return <main className="subpage"><PageHero kicker="Contact Techno Plus" title="Let's build" accent="something meaningful." description="Tell us about the place you want to create. We would be glad to hear from you." image="/photos/pchero.jpg"/><section className="contact-page section-pad"><div className="contact-details"><span className="eyebrow"><span className="eyebrow-dot"/> Visit or reach us</span><h2>Start a<br/><em>conversation.</em></h2><div className="contact-detail"><small>Location</small><p>Munduparamba,<br/>Malappuram, Kerala 676509</p></div><div className="contact-detail"><small>Email</small><a href="mailto:hello@techplus.com">hello@techplus.com <ArrowUpRight/></a></div><div className="contact-detail"><small>Phone</small><a href="tel:+919847012345">+91 98470 12345 <ArrowUpRight/></a></div></div><div className="contact-visual"><img src="/photos/portimg.png" alt="Techno Plus architecture portfolio" loading="lazy"/><a href="mailto:hello@techplus.com" className="contact-title">Have a<br/><em>project in mind?</em><ArrowUpRight/></a></div></section><section className="contact-note section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Tell us about your project</span><p>For new project enquiries, include a little about the site, your goals and the kind of space you have in mind.</p><a className="text-link" href="mailto:hello@techplus.com?subject=Project%20enquiry">Email the studio <ArrowRight/></a></section></main>;
+  const { categories } = useSiteContent();
+  const [formStatus, setFormStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const handleInquiry = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = Object.fromEntries(new FormData(form).entries());
+    setSubmitting(true);
+    setFormStatus('');
+    try {
+      await submitInquiry(values);
+      form.reset();
+      setFormStatus('Thank you. Your message has been sent to the studio.');
+    } catch {
+      setFormStatus('We could not send your message right now. Please email hello@techplus.com.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return <main className="subpage"><PageHero kicker="Contact Techno Plus" title="Let's build" accent="something meaningful." description="Tell us about the place you want to create. We would be glad to hear from you." image="/photos/pchero.jpg"/><section className="contact-page section-pad"><div className="contact-details"><span className="eyebrow"><span className="eyebrow-dot"/> Visit or reach us</span><h2>Start a<br/><em>conversation.</em></h2><div className="contact-detail"><small>Location</small><p>Munduparamba,<br/>Malappuram, Kerala 676509</p></div><div className="contact-detail"><small>Email</small><a href="mailto:hello@techplus.com">hello@techplus.com <ArrowUpRight/></a></div><div className="contact-detail"><small>Phone</small><a href="tel:+919847012345">+91 98470 12345 <ArrowUpRight/></a></div></div><div className="contact-visual"><img src="/photos/portimg.png" alt="Techno Plus architecture portfolio" loading="lazy"/><a href="mailto:hello@techplus.com" className="contact-title">Have a<br/><em>project in mind?</em><ArrowUpRight/></a></div></section><section className="contact-form-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Project enquiry</span><h2>Tell us a little<br/><em>about your idea.</em></h2><p>Your details stay private and can only be viewed by an approved studio admin.</p></div>{firebaseReady ? <form className="inquiry-form" onSubmit={handleInquiry}><div className="inquiry-fields"><label>Your name<input name="name" autoComplete="name" maxLength={100} required/></label><label>Email address<input name="email" type="email" autoComplete="email" maxLength={200} required/></label><label>Phone number<input name="phone" type="tel" autoComplete="tel" maxLength={40} required/></label><label>Project category<select name="projectType"><option value="">Choose a category</option>{categories.map((item) => <option key={item.id || item.slug} value={item.name}>{item.name}</option>)}</select></label><label>Location<input name="location" maxLength={120}/></label><label>Budget (optional)<input name="budget" maxLength={80}/></label><label className="inquiry-message">Your message<textarea name="message" rows={5} maxLength={3000} required/></label></div><div className="inquiry-submit"><button className="admin-primary" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send enquiry'} <ArrowRight size={16}/></button>{formStatus && <span role="status">{formStatus}</span>}</div></form> : <div className="inquiry-unavailable"><p>Online enquiries will be available when the Firebase project is connected. For now, contact the studio directly.</p><a className="text-link" href="mailto:hello@techplus.com?subject=Project%20enquiry">Email the studio <ArrowRight/></a></div>}</section><section className="contact-note section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Tell us about your project</span><p>For new project enquiries, include a little about the site, your goals and the kind of space you have in mind.</p><a className="text-link" href="mailto:hello@techplus.com?subject=Project%20enquiry">Email the studio <ArrowRight/></a></section></main>;
 }
