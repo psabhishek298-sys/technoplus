@@ -61,6 +61,7 @@
         <!-- Plus -->
         <path class="stroke" pathLength="100" style="--dur:0.081s;--delay:1.037s" d="M416 512 L471 497" />
         <path class="stroke" pathLength="100" style="--dur:0.076s;--delay:1.056s" d="M444 506 L445 536" />
+        <path class="stroke" pathLength="100" style="--dur:0.076s;--delay:1.075s" d="M444 506 L444 477" />
       </g>
 
       <!-- ASSOCIATES lettering -->

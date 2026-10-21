@@ -1,4 +1,17 @@
 .work-index{padding-bottom:1px}
+.projects-accordion-hero{display:flex;align-items:center;overflow:hidden;min-height:calc(100svh - 86px);background:var(--paper);padding:20px 0}
+.projects-accordion-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:38px;padding-bottom:clamp(26px,3.2vw,44px)}
+.projects-accordion-heading h1{margin:20px 0 0;font:400 clamp(52px,8.2vw,112px)/.88 CityBlueprint,sans-serif;letter-spacing:-.075em}
+.projects-accordion-heading h1 em{font-style:normal;color:var(--palette-deep)}
+.projects-accordion-heading>p{max-width:350px;margin:0 0 5px;color:#62594e;font-size:12px;line-height:1.8}
+.projects-gallery-wrap{width:100%;padding:0 var(--gutter)}
+.projects-gallery-wrap .accordion-gallery{height:clamp(380px,68svh,650px)!important}
+.projects-gallery-wrap .ag-panel__label{display:none}
+.projects-gallery-empty{height:460px;display:grid;place-items:center;background:var(--sand);color:#62594e;font-size:13px}
+.projects-accordion-hero .projects-filter-row{padding:24px var(--gutter) 28px}
+.projects-accordion-hero .filter-chip{border:1px solid var(--palette-border);background:var(--paper);color:var(--ink);border-radius:30px;padding:10px 18px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;transition:background .25s,color .25s,border-color .25s}
+.projects-accordion-hero .filter-chip.selected,.projects-accordion-hero .filter-chip:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+@media(max-width:700px){.projects-accordion-hero{min-height:calc(100svh - 64px);padding:14px 0}.projects-accordion-heading{display:block;padding-bottom:24px}.projects-accordion-heading h1{font-size:clamp(47px,13vw,78px);margin-top:17px}.projects-accordion-heading>p{font-size:11px;margin-top:16px;max-width:330px}.projects-gallery-wrap{padding:0 17px}.projects-gallery-wrap .accordion-gallery{height:clamp(340px,65svh,540px)!important}.projects-gallery-empty{height:430px}.projects-accordion-hero .projects-filter-row{padding:18px 17px 22px}}
 .projects-filter-scene{height:clamp(520px,72svh,780px);position:relative;display:flex;align-items:flex-end;overflow:hidden;background:#dad6cc;padding-bottom:24px}
 .projects-filter-image{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(246,241,233,.78),rgba(246,241,233,.1)),url('https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580239/mlgya85mhqmoapbmv93a.jpg');background-size:cover;background-position:center 52%;filter:saturate(.75)}
 .projects-filter-row{position:relative;z-index:1;display:flex;align-items:center;gap:7px;padding:0 7px;overflow:auto;width:100%;scrollbar-width:none}

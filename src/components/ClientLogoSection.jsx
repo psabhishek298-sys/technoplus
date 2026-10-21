@@ -16,7 +16,7 @@ export function ClientLogoSection() {
         <p>Organizations we are proud to have worked with.</p>
       </div>
       <div className="client-logos-track">
-        <LogoLoop logos={logos} speed={60} direction="left" logoHeight={56} gap={112} hoverSpeed={0} fadeOut fadeOutColor="#efe4d6" ariaLabel="Our clients"/>
+        <LogoLoop logos={logos} speed={60} direction="left" logoHeight={56} gap={112} hoverSpeed={0} fadeOut fadeOutColor="#EFE9E3" ariaLabel="Our clients"/>
       </div>
     </section>
   );

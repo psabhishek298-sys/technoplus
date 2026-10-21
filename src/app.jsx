@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
 import { SiteContentProvider, useSiteContent } from './firebase/SiteContentContext.jsx';
 import AdminPage from './admin/AdminPage.jsx';
-import ScrollStack, { ScrollStackItem } from './components/ScrollStack.jsx';
+import AccordionGallery from './components/AccordionGallery.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
+import GooeyNav from './components/GooeyNav.jsx';
 import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
 import './styles.css';
 import './pages.css';
-import './components/FeaturedProjects.css';
 import './components/BrandLogo.css';
 import './components/ClientLogos.css';
+import './theme.css';
 
 function ReviewColumn({ reviews, duration, className = '' }) {
   return <div className={`reviews-column ${className}`}><div className="reviews-track" style={{ '--review-duration': `${duration}s` }}>
@@ -34,37 +35,85 @@ function Splash({ done }) {
   </div>;
 }
 
-function Header() {
+function Header({ loading }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   if (pathname === '/admin') return null;
   const lightHeader = pathname === '/' || (pathname.startsWith('/projects/') && pathname !== '/projects');
+  const navItems = [
+    { label: 'Home', to: '/' },
+    { label: 'Projects', to: '/projects' },
+    { label: 'About', to: '/about' },
+    { label: 'Our Process', to: '/procedure' },
+    { label: 'Contact', to: '/contact' },
+  ];
+  const activeIndex = Math.max(0, navItems.findIndex((item) => item.to === pathname || (item.to === '/projects' && pathname.startsWith('/projects/'))));
   return <header className={`header ${lightHeader ? 'header-light' : ''}`}>
-    <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link>
-    <nav className="primary-nav" aria-label="Main navigation">
-      <Link to="/">Home</Link><Link to="/projects">Projects</Link><Link to="/about">About</Link><Link to="/procedure">Our Process</Link><Link to="/contact">Contact</Link>
-    </nav>
+    <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img key={loading ? 'loading-logo' : 'hero-logo'} className="brand-logo" src={loading ? '/techno-logo.svg?animation=loading' : '/techno-logo.svg?animation=hero'} alt="Techno+ Associates"/></Link>
+    <GooeyNav
+      items={navItems.map(({ label }) => ({ label }))}
+      initialActiveIndex={activeIndex}
+      activeIndex={activeIndex}
+      onChange={(index) => navigate(navItems[index].to)}
+      theme={lightHeader ? 'dark' : 'light'}
+      color="#F9F8F6"
+      activeTextColor="#3A342E"
+      size="sm"
+      frame={false}
+      animationTime={720}
+      particleCount={16}
+      spread={52}
+      gooeyness={0.62}
+      wobble={0.48}
+      className="primary-nav"
+    />
   </header>;
 }
 
 function Hero() {
-  const [slide, setSlide] = useState(0);
-  const slides = [
-    { title: "Mr. Satheeshan's Residence", image: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/b9bhk7d33d5cht1ood3s.jpg' },
-    { title: 'Heritage Resort, Kottakkal', image: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/scadeo1kqhurlsrlrv56.jpg' },
-    { title: 'Govardhana Samos Resort', image: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580242/h9ghozwgv9icbkjtoh6e.jpg' },
-  ];
-  useEffect(() => { const id = window.setInterval(() => setSlide(i => (i + 1) % slides.length), 6500); return () => window.clearInterval(id); }, []);
-  return <section className="hero" id="home" aria-label="Featured Techno Plus projects">{slides.map((item, i) => <div key={item.title} className={`hero-image ${slide === i ? 'visible' : ''}`} style={{ backgroundImage: `url("${item.image}")` }}/ >)}<div className="hero-shade"/><div className="hero-caption"><span>Project&nbsp; / &nbsp;{slides[slide].title}</span><span>0{slide + 1} — 03</span></div><a className="scroll-indicator" href="#intro"><span>Scroll to explore</span><i><ArrowDown size={16}/></i></a><div className="hero-dots">{slides.map((s, i) => <button key={s.title} onClick={() => setSlide(i)} aria-label={`Show ${s.title}`} className={slide === i ? 'active' : ''}/>)}</div></section>;
+  return <section className="hero" id="home" aria-label="Techno Plus architecture film">
+    <video className="hero-video" autoPlay muted loop playsInline preload="metadata" poster="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/b9bhk7d33d5cht1ood3s.jpg" aria-hidden="true">
+      <source src="https://res.cloudinary.com/vpi7w3h5/video/upload/v1792589662/technoplus/hero/z3l9qsetsn8epfjl2rpy.webm" type="video/webm"/>
+    </video>
+    <div className="hero-shade"/>
+    <a className="scroll-indicator" href="#intro"><span>Scroll to explore</span><i><ArrowDown size={16}/></i></a>
+  </section>;
+}
+
+function ArchitecturalSketch() {
+  const stageRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsDrawing(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.35 });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div ref={stageRef} className={`sketch-stage ${isDrawing ? 'is-drawing' : ''}`}>
+    <div className="sketch-artwork">
+      <img className="sketch-art" src="/images/architectural-sketch.png" alt="Hand-drawn architectural sketch of a modern Techno Plus home" loading="lazy"/>
+      <span className="sketch-pencil" aria-hidden="true"/>
+    </div>
+    <span className="sketch-caption">A home taking shape · Techno Plus Associates</span>
+  </div>;
 }
 
 function HomePage() {
   const { projects, testimonials } = useSiteContent();
-  const featured = projects.filter(p => p.featured).slice(0, 6);
+  const featured = projects.filter(p => p.featured && (p.coverImage || p.heroImage)).slice(0, 5);
   const reviewColumnSize = Math.ceil(testimonials.length / 3);
   const reviewColumns = [testimonials.slice(0, reviewColumnSize), testimonials.slice(reviewColumnSize, reviewColumnSize * 2), testimonials.slice(reviewColumnSize * 2)];
   return <main><Hero/>
-    <section className="intro section-pad" id="intro"><div className="eyebrow"><span className="eyebrow-dot"/> Independent architecture practice <span className="eyebrow-line"/></div><div className="intro-content"><h1>We design <em>thoughtful spaces</em> for people and place.</h1><div className="intro-aside"><p>Techno Plus Associates is an architecture practice established in 1990. We create functional, beautiful spaces shaped by the people who use them and the places they belong to.</p><Link className="text-link" to="/about">Discover our practice <ArrowRight/></Link></div></div><div className="intro-image"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/vrktg5loe7uvc0uefnnt.png" alt="Techno Plus architecture project" loading="lazy"/><span>Spaces that connect people, place and purpose.</span></div></section>
-    <section className="projects section-pad" id="projects"><div className="section-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work / Kerala</span><h2>Featured<br/><em>Projects</em></h2></div><div className="section-heading-side"><p>Homes, hospitality, commercial spaces and tourism destinations shaped by people and place.</p><Link className="round-link" to="/projects" aria-label="View all projects"><ArrowUpRight/></Link></div></div><ScrollStack className="featured-project-stack" useWindowScroll stackPosition="13%" itemDistance={88} itemStackDistance={26} itemScale={0.04} baseScale={0.78} dimAmount={0.24} holdDistance={220}>{featured.map((p, i) => <ScrollStackItem key={p.id} itemClassName="featured-stack-item"><Link className={`featured-project-link card-${i + 1}`} to={`/projects/${p.slug}`}><img src={p.coverImage} alt={p.title} loading={i < 2 ? 'eager' : 'lazy'}/><span className="featured-project-shade"/><span className="featured-project-number">{String(i + 1).padStart(2, '0')}</span><span className="featured-project-category">{p.category}</span><span className="featured-project-meta"><span><strong>{p.title}</strong><small>{p.location}</small></span><i><ArrowUpRight/></i></span></Link></ScrollStackItem>)}</ScrollStack></section>
+    <section className="intro section-pad" id="intro"><div className="eyebrow"><span className="eyebrow-dot"/> Independent architecture practice <span className="eyebrow-line"/></div><div className="intro-showcase"><div className="intro-content"><h1>We design <em>thoughtful spaces</em> for people and place.</h1><div className="intro-aside"><p>Techno Plus Associates is an architecture practice established in 1990. We create functional, beautiful spaces shaped by the people who use them and the places they belong to.</p><Link className="text-link" to="/about">Discover our practice <ArrowRight/></Link></div></div><div className="intro-image intro-project-image"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/vrktg5loe7uvc0uefnnt.png" alt="Techno Plus architecture project" loading="lazy"/><span>Spaces that connect people, place and purpose.</span></div></div></section>
+    <section className="projects section-pad" id="projects"><div className="section-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work / Kerala</span><h2>Featured<br/><em>Projects</em></h2></div><div className="section-heading-side"><p>Homes, hospitality, commercial spaces and tourism destinations shaped by people and place.</p><Link className="round-link" to="/projects" aria-label="View all projects"><ArrowUpRight/></Link></div></div><AccordionGallery className="home-featured-gallery" items={featured.map((project) => ({ id: project.id, image: project.coverImage || project.heroImage, label: project.title, category: project.category, location: project.location, alt: `${project.title} architecture project`, link: `/projects/${project.slug}` }))} defaultIndex={0} height={520} expandRatio={0.42} gap={10} radius={5} trigger="hover"/></section>
     <section className="stats section-pad" id="about"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our practice</span><h2>Creating with<br/><em>purpose since 1990.</em></h2><p>We combine careful listening, practical expertise and a deep respect for each site to make places that last.</p><Link className="text-link" to="/about">About Techno Plus <ArrowRight/></Link></div><div className="stats-list"><AnimatedStat value={35} label="Years of practice"/><AnimatedStat value={60} label="Built projects"/><AnimatedStat value={15} label="Kerala tourism projects"/><AnimatedStat value={12} label="Cities in India and abroad"/></div></section>
     <section className="expertise section-pad" id="expertise"><div className="expertise-top"><span className="eyebrow"><span className="eyebrow-dot"/> What we do</span><h2>Spaces with<br/><em>meaning.</em></h2><p>From a family home to a public destination, we bring architecture, interiors and landscape together around real needs.</p></div><CinematicList items={[
       { id: '01', title: 'Architecture', location: 'Residential · Pattambi, Kerala', description: 'Homes, hospitality, commercial and institutional spaces.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/b9bhk7d33d5cht1ood3s.jpg', alt: "Mr. Satheeshan's Residence in Pattambi", to: '/projects/satheeshan-residence' },
@@ -73,7 +122,7 @@ function HomePage() {
     ]}/></section>
     <section className="reviews section-pad"><div className="reviews-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Notes from our clients</span><h2>Words from<br/><em>the people we serve.</em></h2><p>Thoughtful feedback from the people who trusted us with their spaces.</p></div><div className="reviews-rating"><div className="reviews-google-mark">G</div><div><strong>4.8 <span>/ 5.0</span></strong><small><b>★★★★★</b> · {testimonials.length} Google reviews</small></div></div></div><div className="reviews-columns" aria-label="Client testimonials"><ReviewColumn reviews={reviewColumns[0]} duration={24}/><ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/><ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/></div></section>
     <ClientLogoSection/>
-    <section className="contact section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Start a conversation</span><Link to="/contact" className="contact-title">Let's build<br/><em>with purpose.</em><ArrowUpRight/></Link><div className="contact-bottom"><span>Have a project in mind?</span><Link to="/contact">Get in touch <ArrowRight/></Link></div></section>
+    <section className="contact section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Start a conversation</span><div className="contact-main"><Link to="/contact" className="contact-title">Let's build<br/><em>with purpose.</em><ArrowUpRight/></Link><div className="contact-sketch"><ArchitecturalSketch/></div></div><div className="contact-bottom"><span>Have a project in mind?</span><Link to="/contact">Get in touch <ArrowRight/></Link></div></section>
   </main>;
 }
 
@@ -116,7 +165,7 @@ function MotionEnhancer() {
 function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => { const id = window.setTimeout(() => setLoading(false), 2100); return () => window.clearTimeout(id); }, []);
-  return <BrowserRouter><SiteContentProvider><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></SiteContentProvider></BrowserRouter>;
+  return <BrowserRouter><SiteContentProvider><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header loading={loading}/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></SiteContentProvider></BrowserRouter>;
 }
 
 createRoot(document.getElementById('root')).render(<App/>);

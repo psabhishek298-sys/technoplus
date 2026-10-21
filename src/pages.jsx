@@ -1,8 +1,9 @@
 import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Building2, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound } from 'lucide-react';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
+import ExpandingCards from './components/ExpandingCards.jsx';
 import { useSiteContent } from './firebase/SiteContentContext.jsx';
 import { firebaseReady } from './firebase/client.js';
 import { submitInquiry } from './firebase/content.js';
@@ -14,14 +15,21 @@ function PageHero({ kicker, title, accent, description, image, className = '' })
 }
 
 export function ProjectsPage() {
-  const { projects, categories } = useSiteContent();
-  const [category, setCategory] = useState('all');
-  const filters = [{ id: 'cat-all', name: 'All Works', slug: 'all' }, ...categories];
-  const visible = useMemo(() => category === 'all' ? projects : projects.filter(p => p.category.toLowerCase() === category.toLowerCase()), [category, projects]);
+  const { projects } = useSiteContent();
+  const galleryProjects = useMemo(() => {
+    const featured = projects.filter((project) => project.featured);
+    return (featured.length ? featured : projects).filter((project) => project.coverImage || project.heroImage).slice(0, 6);
+  }, [projects]);
   return <main className="subpage work-index">
-    <section className="projects-filter-scene" aria-label="Featured projects and filters"><div className="projects-filter-image"/><div className="projects-filter-row">{filters.map(c => <button key={c.slug} className={category === c.slug ? 'filter-chip selected' : 'filter-chip'} onClick={() => setCategory(c.slug)}>{c.name}</button>)}</div></section>
-    <section className="project-wall section-pad" aria-label={`${visible.length} projects`}>
-      <div className="project-wall-grid">{visible.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
+    <section className="projects-accordion-hero" aria-label="Project gallery animation">
+      <div className="projects-gallery-wrap">{galleryProjects.length ? <ExpandingCards items={galleryProjects.map((project) => {
+        const category = (project.category || '').toLowerCase();
+        const Icon = category.includes('residen') ? House : category.includes('hospit') ? Hotel : category.includes('tour') || category.includes('landscape') ? Trees : category.includes('institution') ? Landmark : Building2;
+        return { id: project.id, imgSrc: project.coverImage || project.heroImage, title: project.title, description: project.tagline || project.description || `${project.category || 'Architecture'} project · ${project.location || 'Kerala'}`, icon: <Icon size={22}/>, linkHref: `/projects/${project.slug}` };
+      })} defaultActiveIndex={0}/>: null}</div>
+    </section>
+    <section className="project-wall section-pad" aria-label={`${projects.length} projects`}>
+      <div className="project-wall-grid">{projects.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
         <img className="wall-card-photo" src={p.coverImage || p.heroImage} alt={p.title} loading={i < 6 ? 'eager' : 'lazy'}/><span className="wall-card-shade"/>
         <span className="wall-card-number">{String(i + 1).padStart(2,'0')}</span><span className="wall-card-category">{p.category}</span>
         <span className="wall-card-caption"><span><strong>{p.title}</strong><small><MapPin size={12}/>{p.location}</small></span><i><ArrowRight size={17}/></i></span>
@@ -85,7 +93,6 @@ export function ProcedurePage() {
 }
 
 export function ContactPage() {
-  const { categories } = useSiteContent();
   const [formStatus, setFormStatus] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const handleInquiry = async (event) => {
@@ -104,5 +111,34 @@ export function ContactPage() {
       setSubmitting(false);
     }
   };
-  return <main className="subpage"><PageHero kicker="Contact Techno Plus" title="Let's build" accent="something meaningful." description="Tell us about the place you want to create. We would be glad to hear from you." image="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580255/gtqhjzvvdtmgdtdwturz.jpg"/><section className="contact-page section-pad"><div className="contact-details"><span className="eyebrow"><span className="eyebrow-dot"/> Visit or reach us</span><h2>Start a<br/><em>conversation.</em></h2><div className="contact-detail"><small>Location</small><p>Munduparamba,<br/>Malappuram, Kerala 676509</p></div><div className="contact-detail"><small>Email</small><a href="mailto:hello@techplus.com">hello@techplus.com <ArrowUpRight/></a></div><div className="contact-detail"><small>Phone</small><a href="tel:+919847012345">+91 98470 12345 <ArrowUpRight/></a></div></div><div className="contact-visual"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580256/g5nepib9tvuamjjnd2qp.png" alt="Techno Plus architecture portfolio" loading="lazy"/><a href="mailto:hello@techplus.com" className="contact-title">Have a<br/><em>project in mind?</em><ArrowUpRight/></a></div></section><section className="contact-form-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Project enquiry</span><h2>Tell us a little<br/><em>about your idea.</em></h2><p>Your details stay private and can only be viewed by an approved studio admin.</p></div>{firebaseReady ? <form className="inquiry-form" onSubmit={handleInquiry}><div className="inquiry-fields"><label>Your name<input name="name" autoComplete="name" maxLength={100} required/></label><label>Email address<input name="email" type="email" autoComplete="email" maxLength={200} required/></label><label>Phone number<input name="phone" type="tel" autoComplete="tel" maxLength={40} required/></label><label>Project category<select name="projectType"><option value="">Choose a category</option>{categories.map((item) => <option key={item.id || item.slug} value={item.name}>{item.name}</option>)}</select></label><label>Location<input name="location" maxLength={120}/></label><label>Budget (optional)<input name="budget" maxLength={80}/></label><label className="inquiry-message">Your message<textarea name="message" rows={5} maxLength={3000} required/></label></div><div className="inquiry-submit"><button className="admin-primary" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send enquiry'} <ArrowRight size={16}/></button>{formStatus && <span role="status">{formStatus}</span>}</div></form> : <div className="inquiry-unavailable"><p>Online enquiries will be available when the Firebase project is connected. For now, contact the studio directly.</p><a className="text-link" href="mailto:hello@techplus.com?subject=Project%20enquiry">Email the studio <ArrowRight/></a></div>}</section><section className="contact-note section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Tell us about your project</span><p>For new project enquiries, include a little about the site, your goals and the kind of space you have in mind.</p><a className="text-link" href="mailto:hello@techplus.com?subject=Project%20enquiry">Email the studio <ArrowRight/></a></section></main>;
+  const mapUrl = 'https://www.google.com/maps/place/Techno+%2B+Associates/@11.0505832,76.0931171,909m/data=!3m1!1e3!4m14!1m7!3m6!1s0x3ba63522ec3ef783:0x6eb96efac027126b!2sTechno+%2B+Associates!8m2!3d11.0505832!4d76.0931171!16s%2Fg%2F11k4lrhrmd!3m5!1s0x3ba63522ec3ef783:0x6eb96efac027126b!8m2!3d11.0505832!4d76.0931171!16s%2Fg%2F11k4lrhrmd?hl=en&entry=ttu&g_ep=EgoyMDI2MTAxOC4wIKXMDSoASAFQAw%3D%3D';
+  return <main className="subpage contact-redesign">
+    <section className="contact-landing">
+      <div className="contact-landing-content section-pad">
+        <div className="contact-landing-copy">
+          <span className="eyebrow"><span className="eyebrow-dot"/> Send us a message <span className="eyebrow-line"/></span>
+          <h1>Let's build<br/><em>meaningful.</em></h1>
+          <p>We'd love to hear from you. Whether you have a question about our services, a project in mind, or anything else, our team is ready to help.</p>
+          <div className="contact-quick-details">
+            <div><i><MapPin size={17}/></i><span><strong>Location</strong><small>Munduparamba, Malappuram, Kerala 676509</small></span></div>
+            <div><i><Mail size={17}/></i><span><strong>Email</strong><a href="mailto:hello@techplus.com">hello@techplus.com</a></span></div>
+            <div><i><Phone size={17}/></i><span><strong>Phone</strong><a href="tel:+919847012345">+91 98470 12345</a></span></div>
+          </div>
+        </div>
+        {firebaseReady ? <form className="contact-message-card" onSubmit={handleInquiry}>
+          <span className="contact-form-kicker">Send us a message <i/></span>
+          <label className="contact-field"><span>Name</span><span className="contact-input-wrap"><UserRound size={16}/><input name="name" autoComplete="name" maxLength={100} placeholder="John Doe" required/></span></label>
+          <label className="contact-field"><span>Email</span><span className="contact-input-wrap"><Mail size={16}/><input name="email" type="email" autoComplete="email" maxLength={200} placeholder="john@example.com" required/></span></label>
+          <label className="contact-field"><span>Mobile number</span><span className="contact-input-wrap"><Phone size={16}/><input name="phone" type="tel" autoComplete="tel" maxLength={40} placeholder="+91 98765 43210" required/></span></label>
+          <label className="contact-field"><span>Message</span><span className="contact-input-wrap contact-message-wrap"><MessageSquare size={16}/><textarea name="message" rows={4} maxLength={3000} placeholder="Tell us about your project..." required/></span></label>
+          <div className="contact-form-actions"><button className="contact-send-button" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'} <ArrowRight size={17}/></button><a className="contact-whatsapp-button" href={`https://wa.me/919847012345?text=${encodeURIComponent('Hello Techno Plus Associates, I would like to discuss a project.')}`} target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div>
+          {formStatus && <p className={`contact-form-status ${formStatus.startsWith('Thank') ? 'is-success' : 'is-error'}`} role="status">{formStatus}</p>}
+        </form> : <div className="contact-message-card contact-form-offline"><span className="contact-form-kicker">Send us a message <i/></span><h2>We'd love to hear from you.</h2><p>Online enquiries are temporarily unavailable. You can reach the studio by email or WhatsApp.</p><div className="contact-form-actions"><a className="contact-send-button" href="mailto:hello@techplus.com">Email the studio <ArrowRight size={17}/></a><a className="contact-whatsapp-button" href="https://wa.me/919847012345" target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div></div>}
+      </div>
+    </section>
+    <section className="contact-map-card" aria-labelledby="contact-map-title">
+      <div className="contact-map-heading"><div><h2 id="contact-map-title"><MapPin size={20}/> Visit our studio</h2><p>Techno + Associates, Munduparamba, Malappuram, Kerala 676509</p></div><a href={mapUrl} target="_blank" rel="noreferrer">Open in Google Maps <ArrowRight size={16}/></a></div>
+      <div className="contact-map-frame"><iframe title="Techno Plus Associates location in Munduparamba, Malappuram" src="https://maps.google.com/maps?q=11.0505832%2C76.0931171&t=k&z=17&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/></div>
+    </section>
+  </main>;
 }
