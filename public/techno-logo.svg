@@ -1,0 +1,96 @@
+<svg id="brand-logo" class="animate" xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 515 607" role="img"
+         aria-label="TECHNO+ ASSOCIATES logo.">
+  <style>
+    .stroke{fill:none;stroke:#101010;stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100}
+    .animate .stroke{animation:draw var(--dur,.5s) cubic-bezier(.56,.05,.24,1) var(--delay,0s) forwards}
+    #brand-name .stroke{stroke-width:1.65}
+    #associates .stroke{stroke-width:1.45}
+    @keyframes draw{to{stroke-dashoffset:0}}
+    @media(prefers-reduced-motion:reduce){.stroke{stroke-dashoffset:0;animation:none}}
+  </style>
+      <title>TECHNO+ ASSOCIATES — logo drawing animation</title>
+      <desc>A minimal black line-art network symbol, followed by TECHNO+ and the widely spaced word ASSOCIATES. The background is transparent.</desc>
+
+      <!-- Main network axes -->
+      <g id="network">
+        <path class="stroke" pathLength="100" style="--dur:0.211s;--delay:0s" d="M263 7 V450" />
+        <path class="stroke" pathLength="100" style="--dur:0.194s;--delay:0.065s" d="M41.5 229 H484" />
+
+        <!-- Connected lower-right circuit -->
+        <path class="stroke" pathLength="100" style="--dur:0.13s;--delay:0.194s" d="M263 229 L420 386" />
+        <path class="stroke" pathLength="100" style="--dur:0.103s;--delay:0.243s" d="M420 229 V386" />
+        <path class="stroke" pathLength="100" style="--dur:0.103s;--delay:0.275s" d="M263 386 H420" />
+
+        <!-- Nine hollow node circles; no background fill, so the artwork stays transparent -->
+        <g class="nodes">
+          <circle class="stroke" pathLength="100" cx="105.5" cy="71.5" r="9.5" style="--dur:0.076s;--delay:0.305s" />
+          <circle class="stroke" pathLength="100" cx="263" cy="71.5" r="9.5" style="--dur:0.076s;--delay:0.324s" />
+          <circle class="stroke" pathLength="100" cx="420" cy="71.5" r="9.5" style="--dur:0.076s;--delay:0.343s" />
+          <circle class="stroke" pathLength="100" cx="105.5" cy="229" r="9.5" style="--dur:0.076s;--delay:0.362s" />
+          <circle class="stroke" pathLength="100" cx="263" cy="229" r="9.5" style="--dur:0.076s;--delay:0.381s" />
+          <circle class="stroke" pathLength="100" cx="420" cy="229" r="9.5" style="--dur:0.076s;--delay:0.4s" />
+          <circle class="stroke" pathLength="100" cx="105.5" cy="386" r="9.5" style="--dur:0.076s;--delay:0.419s" />
+          <circle class="stroke" pathLength="100" cx="263" cy="386" r="9.5" style="--dur:0.076s;--delay:0.437s" />
+          <circle class="stroke" pathLength="100" cx="420" cy="386" r="9.5" style="--dur:0.076s;--delay:0.456s" />
+        </g>
+      </g>
+
+      <!-- TECHNO+ lettering: custom single-line paths to stay close to the supplied mark -->
+      <g id="brand-name" class="word-stroke">
+        <!-- T -->
+        <path class="stroke" pathLength="100" style="--dur:0.086s;--delay:0.554s" d="M51 492 L93 469" />
+        <path class="stroke" pathLength="100" style="--dur:0.097s;--delay:0.572s" d="M69 483 L69 545" />
+        <!-- E -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:0.616s" d="M102 469 L102 544" />
+        <path class="stroke" pathLength="100" style="--dur:0.07s;--delay:0.629s" d="M102 470 L135 465" />
+        <path class="stroke" pathLength="100" style="--dur:0.07s;--delay:0.643s" d="M102 505 L130 492" />
+        <path class="stroke" pathLength="100" style="--dur:0.076s;--delay:0.656s" d="M102 544 L134 534" />
+        <!-- C -->
+        <path class="stroke" pathLength="100" style="--dur:0.143s;--delay:0.697s" d="M199 471 C187 467 174 472 165 484 C155 497 153 516 161 531 C169 544 185 549 201 536" />
+        <!-- H -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:0.778s" d="M217 468 L217 545" />
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:0.794s" d="M249 467 L249 545" />
+        <path class="stroke" pathLength="100" style="--dur:0.073s;--delay:0.807s" d="M217 511 L249 495" />
+        <!-- N -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:0.851s" d="M285 468 L285 545" />
+        <path class="stroke" pathLength="100" style="--dur:0.103s;--delay:0.867s" d="M285 468 L317 541" />
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:0.883s" d="M317 468 L317 545" />
+        <!-- O -->
+        <path class="stroke" pathLength="100" style="--dur:0.167s;--delay:0.926s" d="M371 469 C382 466 391 472 395 482 C401 497 389 520 374 535 C363 546 353 548 347 539 C340 528 345 503 356 485 C361 477 366 472 371 469 Z" />
+        <!-- Plus -->
+        <path class="stroke" pathLength="100" style="--dur:0.081s;--delay:1.037s" d="M416 512 L471 497" />
+        <path class="stroke" pathLength="100" style="--dur:0.076s;--delay:1.056s" d="M444 506 L445 536" />
+      </g>
+
+      <!-- ASSOCIATES lettering -->
+      <g id="associates" class="tagline-stroke">
+        <!-- A -->
+        <path class="stroke" pathLength="100" style="--dur:0.076s;--delay:1.112s" d="M51 594 L63 569 L73 592" />
+        <path class="stroke" pathLength="100" style="--dur:0.049s;--delay:1.126s" d="M57 582 L68 578" />
+        <!-- S -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:1.161s" d="M112 568 C106 565 100 567 98 572 C95 577 99 582 105 585 C111 588 114 591 109 596 C105 600 100 599 96 596" />
+        <!-- S -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:1.212s" d="M156 567 C150 565 144 567 142 572 C139 577 143 582 149 585 C155 588 158 591 153 596 C149 600 144 599 140 596" />
+        <!-- O -->
+        <path class="stroke" pathLength="100" style="--dur:0.108s;--delay:1.264s" d="M195 567 C188 566 185 576 185 585 C185 594 189 600 196 596 C202 592 205 579 201 572 C200 569 198 567 195 567 Z" />
+        <!-- C -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:1.318s" d="M248 569 C242 565 236 571 234 581 C232 591 236 598 243 598 C247 598 250 595 251 592" />
+        <!-- I -->
+        <path class="stroke" pathLength="100" style="--dur:0.065s;--delay:1.372s" d="M282 569 L281 597" />
+        <!-- A -->
+        <path class="stroke" pathLength="100" style="--dur:0.081s;--delay:1.409s" d="M312 596 L320 568 L329 594" />
+        <path class="stroke" pathLength="100" style="--dur:0.049s;--delay:1.423s" d="M315 584 L326 581" />
+        <!-- T -->
+        <path class="stroke" pathLength="100" style="--dur:0.059s;--delay:1.466s" d="M357 571 L371 566" />
+        <path class="stroke" pathLength="100" style="--dur:0.065s;--delay:1.48s" d="M364 569 L364 595" />
+        <!-- E -->
+        <path class="stroke" pathLength="100" style="--dur:0.065s;--delay:1.52s" d="M401 568 L400 595" />
+        <path class="stroke" pathLength="100" style="--dur:0.049s;--delay:1.534s" d="M401 568 L412 564" />
+        <path class="stroke" pathLength="100" style="--dur:0.049s;--delay:1.547s" d="M400 582 L410 578" />
+        <path class="stroke" pathLength="100" style="--dur:0.049s;--delay:1.561s" d="M400 595 L412 591" />
+        <!-- S -->
+        <path class="stroke" pathLength="100" style="--dur:0.092s;--delay:1.604s" d="M457 568 C451 565 445 567 443 572 C440 577 444 582 450 585 C456 588 459 591 454 596 C450 600 445 599 441 596" />
+      </g>
+    </svg>
+

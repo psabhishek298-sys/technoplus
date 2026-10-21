@@ -1,0 +1,18 @@
+.featured-project-stack .scroll-stack__inner{padding-inline:0}
+.featured-stack-item{height:clamp(340px,43vw,520px)}
+.featured-stack-item.scroll-stack-card{padding:0;overflow:hidden;border-radius:24px;background:#bdb8ae;color:#fff}
+.featured-project-link{position:relative;display:block;width:100%;height:100%;overflow:hidden;border-radius:inherit;color:#fff;isolation:isolate}
+.featured-project-link>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.featured-project-link:hover>img{transform:scale(1.035)}
+.featured-project-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,18,17,.12),transparent 30%,rgba(15,16,15,.72));pointer-events:none}
+.featured-project-number{position:absolute;top:22px;left:24px;font:600 15px/1 'DM Sans',sans-serif;letter-spacing:.05em}
+.featured-project-category{position:absolute;top:20px;right:22px;padding:7px 12px;border-radius:999px;background:rgba(39,37,32,.48);font:600 8px 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;backdrop-filter:blur(7px)}
+.featured-project-meta{position:absolute;left:25px;right:25px;bottom:23px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.featured-project-meta>span{display:flex;flex-direction:column;gap:7px}
+.featured-project-meta strong{font:400 clamp(23px,3.2vw,38px)/1.08 Manrope,sans-serif;letter-spacing:-.055em}
+.featured-project-meta small{color:#eee9e1;font:600 9px 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase}
+.featured-project-meta i{display:grid;width:42px;height:42px;place-items:center;flex:0 0 42px;border:1px solid #ffffff85;border-radius:50%;transition:.2s}
+.featured-project-meta i svg{width:19px;height:19px;stroke-width:1.4}
+.featured-project-link:hover .featured-project-meta i{background:#f6f1e9;color:#272520;border-color:#f6f1e9;transform:translate(2px,-2px)}
+.featured-stack-item .scroll-stack-card__shade{border-radius:inherit}
+@media(max-width:700px){.featured-stack-item{height:clamp(300px,76vw,420px)}.featured-stack-item.scroll-stack-card{border-radius:17px}.featured-project-number{top:15px;left:16px;font-size:12px}.featured-project-category{top:13px;right:14px;padding:6px 9px;font-size:7px}.featured-project-meta{left:16px;right:15px;bottom:15px;gap:10px}.featured-project-meta strong{font-size:clamp(20px,6vw,28px)}.featured-project-meta small{font-size:7px}.featured-project-meta i{width:34px;height:34px;flex-basis:34px}.featured-project-meta i svg{width:16px;height:16px}}

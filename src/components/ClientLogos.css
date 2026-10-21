@@ -1,0 +1,68 @@
+.client-logos {
+  padding-top: 50px;
+  padding-bottom: 58px;
+  border-top: 1px solid #e1d9cd;
+  background: var(--sand);
+}
+
+.client-logos-heading {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 27px;
+  text-align: center;
+}
+
+.client-logos-heading h2 {
+  margin: 0;
+  font: 300 clamp(36px, 5vw, 58px)/.98 Manrope, sans-serif;
+  letter-spacing: -.07em;
+}
+
+.client-logos-heading h2 em {
+  color: #a88392;
+  font-style: normal;
+}
+
+.client-logos-heading p {
+  margin: 0;
+  color: #625d54;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.client-logos-track {
+  display: flex;
+  min-height: 84px;
+  align-items: center;
+}
+
+.client-logos-track .logoloop {
+  --logoloop-fadeColorAuto: var(--sand);
+}
+
+@media (max-width: 700px) {
+  .client-logos {
+    padding-top: 38px;
+    padding-bottom: 42px;
+  }
+
+  .client-logos-heading {
+    gap: 10px;
+    margin-bottom: 21px;
+  }
+
+  .client-logos-heading h2 {
+    font-size: 44px;
+  }
+
+  .client-logos-heading p {
+    max-width: 260px;
+    font-size: 10px;
+  }
+
+  .client-logos-track {
+    min-height: 72px;
+  }
+}
