@@ -1,6 +1,6 @@
 .work-index{padding-bottom:1px}
 .projects-filter-scene{height:clamp(520px,72svh,780px);position:relative;display:flex;align-items:flex-end;overflow:hidden;background:#dad6cc;padding-bottom:24px}
-.projects-filter-image{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(246,241,233,.78),rgba(246,241,233,.1)),url('/photos/imgi_3_baner10.jpg');background-size:cover;background-position:center 52%;filter:saturate(.75)}
+.projects-filter-image{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(246,241,233,.78),rgba(246,241,233,.1)),url('https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580239/mlgya85mhqmoapbmv93a.jpg');background-size:cover;background-position:center 52%;filter:saturate(.75)}
 .projects-filter-row{position:relative;z-index:1;display:flex;align-items:center;gap:7px;padding:0 7px;overflow:auto;width:100%;scrollbar-width:none}
 .projects-filter-row::-webkit-scrollbar{display:none}
 .projects-filter-row .filter-chip{border:0;background:rgba(246,241,233,.9);box-shadow:0 2px 9px #27252015;border-radius:30px;padding:10px 18px;color:#615d54;font-size:9px;letter-spacing:.11em;text-transform:uppercase}

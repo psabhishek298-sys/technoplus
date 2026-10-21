@@ -10,12 +10,12 @@ import { GOOGLE_TESTIMONIALS } from '../data/testimonials.ts';
 export const CONTENT_COLLECTIONS = ['projects', 'categories', 'clients', 'testimonials', 'inquiries'];
 
 export const DEFAULT_CLIENTS = [
-  { id: 'client-01', name: 'Sree Gokulam Group', logoPath: '/photos/client-logos/client-01.webp', website: '', order: 1, published: true },
-  { id: 'client-02', name: 'Bhima Jewellers', logoPath: '/photos/client-logos/client-02.webp', website: '', order: 2, published: true },
-  { id: 'client-03', name: 'Wonderla', logoPath: '/photos/client-logos/client-03.png', website: '', order: 3, published: true },
-  { id: 'client-04', name: 'Lulu Group', logoPath: '/photos/client-logos/client-04.webp', website: '', order: 4, published: true },
-  { id: 'client-05', name: 'Kalyan Silks', logoPath: '/photos/client-logos/client-05.webp', website: '', order: 5, published: true },
-  { id: 'client-06', name: 'Kairali', logoPath: '/photos/client-logos/client-06.webp', website: '', order: 6, published: true },
+  { id: 'client-01', name: 'Sree Gokulam Group', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580232/p3i0915rqppe19miec0h.webp', website: '', order: 1, published: true },
+  { id: 'client-02', name: 'Bhima Jewellers', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580232/bnqklwb5gvrx2cxswwhn.webp', website: '', order: 2, published: true },
+  { id: 'client-03', name: 'Wonderla', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580233/ceczjaktmkisyyyvuhdq.png', website: '', order: 3, published: true },
+  { id: 'client-04', name: 'Lulu Group', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/a3uos1bccielqnpw2iap.webp', website: '', order: 4, published: true },
+  { id: 'client-05', name: 'Kalyan Silks', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580235/snavhtwexfmkkb3abldh.webp', website: '', order: 5, published: true },
+  { id: 'client-06', name: 'Kairali', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580235/u3oxdzjt6iotbnzducpd.webp', website: '', order: 6, published: true },
 ];
 
 export function normalizeContent(collectionName, raw) {
@@ -38,9 +38,13 @@ export function normalizeContent(collectionName, raw) {
 
 export function subscribePublicContent(collectionName, onData, onError = () => {}) {
   if (!firebaseReady) return () => {};
-  const q = query(collection(db, collectionName), where('published', '==', true), orderBy('order'));
+  // Keep the public query on Firestore's single-field published index. Sorting
+  // locally avoids a composite-index requirement on every environment.
+  const q = query(collection(db, collectionName), where('published', '==', true));
   return onSnapshot(q, (snapshot) => {
-    onData(snapshot.docs.map((item) => ({ id: item.id, ...normalizeContent(collectionName, item.data()) })));
+    const items = snapshot.docs.map((item) => ({ id: item.id, ...normalizeContent(collectionName, item.data()) }));
+    items.sort((left, right) => (Number(left.order) || 0) - (Number(right.order) || 0));
+    onData(items);
   }, onError);
 }
 
@@ -58,6 +62,15 @@ export async function saveContent(collectionName, id, value) {
   const payload = { ...value, updatedAt: serverTimestamp() };
   if (id) return updateDoc(doc(db, collectionName, id), payload);
   return addDoc(collection(db, collectionName), { ...payload, createdAt: serverTimestamp() });
+}
+
+export async function saveContentOrder(collectionName, items) {
+  if (!db) throw new Error('Firebase is not configured yet.');
+  const batch = writeBatch(db);
+  items.forEach((item, index) => {
+    batch.update(doc(db, collectionName, item.id), { order: index + 1, updatedAt: serverTimestamp() });
+  });
+  await batch.commit();
 }
 
 export async function removeContent(collectionName, id) {
@@ -81,11 +94,8 @@ export async function markInquiryStatus(id, status) {
 export async function importCurrentSiteContent() {
   if (!db) throw new Error('Firebase is not configured yet.');
   const names = ['projects', 'categories', 'clients', 'testimonials'];
-  const existing = await Promise.all(names.map((name) => getDocs(collection(db, name))));
-  if (existing.some((snapshot) => !snapshot.empty)) {
-    throw new Error('At least one content collection already has records. Import stopped to prevent overwriting or duplicate seed data.');
-  }
-
+  const snapshots = await Promise.all(names.map((name) => getDocs(collection(db, name))));
+  const existing = Object.fromEntries(names.map((name, index) => [name, snapshots[index].docs.map((item) => ({ id: item.id, ...item.data() }))]));
   const batch = writeBatch(db);
   const createdAt = serverTimestamp();
   const projects = FALLBACK_PROJECTS.map((project) => {
@@ -95,12 +105,28 @@ export async function importCurrentSiteContent() {
   const categories = DEFAULT_CATEGORIES.filter((item) => item.slug !== 'all').map(({ id, count, ...item }, index) => [id, { ...item, order: index + 1, published: true, createdAt, updatedAt: createdAt }]);
   const clients = DEFAULT_CLIENTS.map(({ id, ...item }) => [id, { ...item, createdAt, updatedAt: createdAt }]);
   const testimonials = GOOGLE_TESTIMONIALS.map(({ id, name, role = '', location = '', quote, rating = 5 }, index) => [id, { name, role, location, quote, rating, order: index + 1, published: true, createdAt, updatedAt: createdAt }]);
-
-  [...projects, ...categories, ...clients, ...testimonials].forEach(([id, value], index) => {
-    const collectionName = index < projects.length ? 'projects' : index < projects.length + categories.length ? 'categories' : index < projects.length + categories.length + clients.length ? 'clients' : 'testimonials';
-    batch.set(doc(db, collectionName, id), value);
-  });
+  const existingKeys = {
+    projects: new Set(existing.projects.flatMap((item) => [item.slug].filter(Boolean))),
+    categories: new Set(existing.categories.flatMap((item) => [item.slug].filter(Boolean))),
+    clients: new Set(existing.clients.flatMap((item) => [item.logoPath, item.name].filter(Boolean))),
+    testimonials: new Set(existing.testimonials.flatMap((item) => [item.quote].filter(Boolean))),
+  };
+  const entries = { projects, categories, clients, testimonials };
+  let imported = 0;
+  for (const collectionName of names) {
+    const idSet = new Set(existing[collectionName].map((item) => item.id));
+    for (const [id, value] of entries[collectionName]) {
+      const dedupeKey = collectionName === 'projects' || collectionName === 'categories'
+        ? value.slug
+        : collectionName === 'clients' ? (value.logoPath || value.name) : value.quote;
+      if (idSet.has(id) || existingKeys[collectionName].has(dedupeKey)) continue;
+      batch.set(doc(db, collectionName, id), value);
+      imported += 1;
+    }
+  }
+  if (imported === 0) return 0;
   await batch.commit();
+  return imported;
 }
 
 export function docRef(collectionName, id) {

@@ -1,6 +1,43 @@
 import type { Project } from './projects';
 
-const image = (name: string) => `/photos/official-projects/${name}`;
+const cloudinaryImages: Record<string, string> = {
+  "govardhana-2.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580242/h9ghozwgv9icbkjtoh6e.jpg",
+  "govardhana-3.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580243/sstarccrlvbje6smhqs2.jpg",
+  "govardhana-4.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580243/ho7iruxoyxl65eb9iswe.jpg",
+  "office1.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580244/k5p8zwaefiofcwgd8yvx.jpg",
+  "imgi_5_govardhana-1.webp": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580244/xxfdep0xklgbh97quzil.webp",
+  "office3.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580244/aqbbo48hij0uo7nckw17.jpg",
+  "office4.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580245/ztrbz8v1ojscmaeq4toh.jpg",
+  "office2.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580245/vsodvnegla4iktumpo03.jpg",
+  "project1.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580246/rifzdrpkyjnbk9o5ltbn.jpg",
+  "project10.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580246/zznmsi8afpiepti3fqnf.jpg",
+  "project11.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580246/tspsaublh22mpshaoinu.jpg",
+  "project12.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/tx3ydf2088yqh9es3hxe.jpg",
+  "project13.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/m9bcfuvjdtjbemhvmvgz.jpg",
+  "project14.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580248/q4jspazc6nh0xct1g5mg.jpg",
+  "project15.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580248/mnlbp66znd3qtodsvzwq.jpg",
+  "project16.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580248/qm8edblvmlrhvyitq7bg.jpg",
+  "project3.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580249/l4fdvwdvkpkecyl1h52y.jpg",
+  "project4.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580249/ct3j1uiuklihrkomncns.jpg",
+  "project5.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580249/f3p5cxx9vc2s0lrl7yjr.jpg",
+  "project6.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580250/hk8yapfmqutda4pyirrc.jpg",
+  "project7.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580250/coyrxsmarbj17oby8mcl.jpg",
+  "project8.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580250/xgxzjp4vaxiyv8klcy35.jpg",
+  "project9.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/cfar0ynv0bh5xjsrnxz7.jpg",
+  "resort-1.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/scadeo1kqhurlsrlrv56.jpg",
+  "resort-2.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/kuiy8hazbr4yi7pskzdh.jpg",
+  "satheeshan-1.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/b9bhk7d33d5cht1ood3s.jpg",
+  "satheeshan-10.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/u3brxdc47i8jftkod4rs.jpg",
+  "satheeshan-11.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/bk2f9o0vb0gn5wcbm7gu.png",
+  "satheeshan-12.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580253/ugbix7gklkebddd9wsno.jpg",
+  "satheeshan-13.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580253/mg4takpn2pt0u7vhpg4c.jpg",
+  "satheeshan-2.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580254/pyq4wmqdhu510ecmgqww.jpg",
+  "satheeshan-4.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580254/vohg844wjxgqr8bzocqo.jpg",
+  "satheeshan-5.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580254/gp1wqrvaa0eof2rikst9.jpg",
+  "satheeshan-8.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580254/nn7za2e5z4tvieb4ocdt.jpg",
+  "satheeshan-9.jpg": "https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580255/jbx882e6zoutsurbken3.jpg"
+};
+const image = (name: string) => cloudinaryImages[name] || '';
 
 export const OFFICIAL_PROJECTS: Project[] = [
   {

@@ -134,3 +134,124 @@
 @media(max-width:920px){.admin-workspace{grid-template-columns:190px minmax(0,1fr)}.admin-sidebar{padding-right:12px;padding-left:12px}.admin-content{padding:28px 23px}.admin-overview{grid-template-columns:repeat(3,minmax(0,1fr))}.contact-form-section{grid-template-columns:1fr;gap:28px}}
 @media(max-width:650px){.admin-page{padding:14px}.admin-setup,.admin-login-card{padding:30px 22px}.admin-mark{margin-bottom:27px}.admin-workspace{display:block}.admin-sidebar{position:sticky;z-index:10;top:0;width:100%;height:auto;padding:9px 12px}.admin-sidebar-brand{display:none}.admin-nav-label,.admin-sidebar-bottom{display:none}.admin-sidebar nav{display:flex;overflow-x:auto;gap:4px}.admin-sidebar nav button{justify-content:center;min-width:88px;width:auto;min-height:38px;padding:0 9px;font-size:8px}.admin-sidebar nav button>svg{width:14px}.admin-sidebar nav button small{display:none}.admin-topbar{height:61px;padding:0 14px}.admin-topbar>div:first-child span{font-size:7px}.admin-topbar>div:first-child strong{font-size:12px}.admin-user{gap:8px}.admin-user>span{display:none}.admin-user button{padding:8px;font-size:9px}.admin-content{padding:24px 14px}.admin-page-title{align-items:flex-start;flex-direction:column}.admin-page-title h1{font-size:47px}.admin-page-title p{max-width:280px;font-size:10px;line-height:1.6}.admin-add{min-height:39px}.admin-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:30px}.admin-overview button{min-height:75px;padding:11px}.admin-overview button>span{font-size:8px}.admin-overview button>strong{font-size:23px}.admin-import{align-items:flex-start;flex-direction:column;padding:14px}.admin-import button{min-height:38px}.admin-list-heading{align-items:flex-start;flex-direction:column}.admin-search{width:100%}.admin-record{grid-template-columns:28px minmax(0,1fr) 64px;gap:8px;padding:10px 7px}.admin-publish{grid-column:3;grid-row:1;font-size:7px}.admin-record-actions{grid-column:2/4;grid-row:2;justify-content:flex-start}.admin-record-actions button{min-height:29px}.admin-inquiries{grid-template-columns:1fr}.admin-inquiry{padding:14px}.admin-inquiry-head{align-items:flex-start;flex-direction:column;gap:8px}.admin-modal-backdrop{padding:8px}.admin-modal{max-height:94vh}.admin-modal>header{padding:16px}.admin-modal form{padding:16px}.admin-fields{grid-template-columns:1fr;gap:13px}.admin-fields .span-2{grid-column:auto}.admin-modal-actions{margin-top:18px}.contact-form-section{padding-top:55px;padding-bottom:58px;gap:20px}.inquiry-fields{grid-template-columns:1fr}.inquiry-message{grid-column:auto}.inquiry-submit{align-items:flex-start;flex-direction:column}.inquiry-submit .admin-primary{width:100%}}
 @media(prefers-reduced-motion:reduce){.admin-spinner{animation:none}.admin-primary,.admin-overview button,.admin-login-card input{transition:none}}
+.cloudinary-uploaders{display:grid;gap:10px;margin-top:18px}
+.cloudinary-field{padding:14px;border:1px solid #e2dacf;background:#faf7f1}
+.cloudinary-field-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.cloudinary-field-head>div{display:grid;gap:5px;min-width:0}
+.cloudinary-field-head strong{font-size:10px;font-weight:500}
+.cloudinary-field-head small,.cloudinary-status{color:#827b71;font-size:8px;line-height:1.5}
+.cloudinary-upload-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid #d9cfc3;background:#fffdf9;color:#514a42;font-size:9px;white-space:nowrap;cursor:pointer}
+.cloudinary-upload-button:hover:not(:disabled){border-color:#a88392;color:#71515b}
+.cloudinary-upload-button:disabled{opacity:.55;cursor:not-allowed}
+.cloudinary-empty{display:flex;align-items:center;gap:7px;margin-top:12px;color:#968b80;font-size:9px}
+.cloudinary-image-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cloudinary-image-item{display:flex;align-items:center;gap:7px;max-width:100%;padding:5px;border:1px solid #e2dacf;background:#fffdf9}
+.cloudinary-image-item img{width:36px;height:36px;object-fit:cover;background:#eee7dd}
+.cloudinary-image-item span{max-width:180px;overflow:hidden;color:#665f55;font-size:8px;text-overflow:ellipsis;white-space:nowrap}
+.cloudinary-image-item button{display:grid;width:27px;height:27px;place-items:center;border:0;background:transparent;color:#9b524e;cursor:pointer}
+.cloudinary-status{display:flex;align-items:center;gap:5px;margin-top:9px}
+.cloudinary-spinner{animation:cloudinary-spin .8s linear infinite}
+@keyframes cloudinary-spin{to{transform:rotate(360deg)}}
+@media(max-width:650px){.cloudinary-field{padding:11px}.cloudinary-field-head{align-items:flex-start;flex-direction:column}.cloudinary-upload-button{width:100%;min-height:38px}.cloudinary-image-item span{max-width:130px}}
+@media(prefers-reduced-motion:reduce){.cloudinary-spinner{animation:none}}
+
+/* Admin readability and touch-friendly controls */
+.admin-workspace{grid-template-columns:270px minmax(0,1fr)}
+.admin-sidebar{padding:30px 20px 22px}
+.admin-sidebar-brand span,.admin-nav-label{font-size:11px}
+.admin-sidebar nav button{min-height:50px;font-size:14px}
+.admin-sidebar nav button small{font-size:12px}
+.admin-sidebar-bottom a,.admin-sidebar-bottom span{font-size:12px}
+.admin-topbar{height:84px}
+.admin-topbar>div:first-child span{font-size:10px}
+.admin-topbar>div:first-child strong{font-size:17px}
+.admin-user>span,.admin-user button{font-size:13px}
+.admin-user button{min-height:42px;padding:0 14px}
+.admin-content{width:min(100%,1500px);padding:clamp(32px,4vw,64px)}
+.admin-page-title h1{font-size:clamp(48px,5vw,68px)}
+.admin-page-title p,.admin-list-heading p{font-size:14px;line-height:1.6}
+.admin-eyebrow{font-size:11px}
+.admin-primary{min-height:48px;padding:0 20px;font-size:14px}
+.admin-overview{gap:12px;margin-bottom:44px}
+.admin-overview button{min-height:110px;padding:17px}
+.admin-overview button>span{gap:10px;font-size:13px}
+.admin-overview button>strong{font-size:32px}
+.admin-import{padding:20px 22px}
+.admin-import strong{font-size:16px}
+.admin-import p,.admin-import button{font-size:13px;line-height:1.65}
+.admin-import button,.admin-inquiry-actions button{min-height:42px;padding:0 15px;font-size:12px}
+.admin-notice{padding:14px 16px;font-size:13px}
+.admin-list-heading h2{font-size:28px}
+.admin-search{width:min(330px,42%);padding:0 13px}
+.admin-search input{height:46px;font-size:13px}
+.admin-record{grid-template-columns:54px minmax(0,1fr) 105px auto;gap:16px;min-height:82px;padding:14px 18px}
+.admin-record-order{font-size:13px}
+.admin-record-copy{gap:6px}
+.admin-record-copy strong{font-size:15px}
+.admin-record-copy span{font-size:12px}
+.admin-publish,.inquiry-status{padding:7px 9px;font-size:10px}
+.admin-record-actions{gap:8px}
+.admin-record-actions button{min-width:40px;height:39px;padding:0 11px;font-size:12px}
+.admin-record-actions button.admin-order-button{width:38px;min-width:38px;padding:0}
+.admin-record-actions button:disabled{opacity:.35;cursor:not-allowed}
+.admin-reorder-hint{display:flex;align-items:center;gap:8px;margin:0 0 12px;color:#71695f;font-size:13px}
+.admin-record.is-draggable{cursor:grab;transition:background .18s,opacity .18s,transform .18s}
+.admin-record.is-draggable:active{cursor:grabbing}
+.admin-record.is-draggable:hover{background:#fbf7f1}
+.admin-record.is-dragging{opacity:.45;transform:scale(.99)}
+.admin-empty{padding:75px 20px}
+.admin-empty strong{font-size:17px}
+.admin-empty p{font-size:13px}
+.admin-inquiries{gap:16px}
+.admin-inquiry{padding:22px}
+.admin-inquiry-head strong{font-size:15px}
+.admin-inquiry-head time,.admin-inquiry-contact,.admin-inquiry-meta{font-size:12px}
+.admin-inquiry p{font-size:13px}
+.admin-modal{width:min(100%,920px)}
+.admin-modal>header{padding:24px 30px}
+.admin-modal h2{font-size:28px}
+.admin-close{width:42px;height:42px}
+.admin-modal form{padding:28px 30px 30px}
+.admin-fields{gap:20px}
+.admin-login-card label,.admin-fields>label{gap:9px;font-size:14px}
+.admin-login-card input,.admin-fields input:not([type=checkbox]),.admin-fields textarea,.admin-fields select{min-height:52px;padding:13px 15px;font-size:14px}
+.admin-fields textarea{line-height:1.7}
+.admin-fields>label>small,.checkbox-field small{font-size:12px}
+.admin-fields .checkbox-field{min-height:54px;padding:13px 15px}
+.checkbox-field>input{width:19px;height:19px}
+.checkbox-field>span{font-size:13px}
+.admin-modal-actions{margin-top:28px;padding-top:20px}
+.admin-modal-actions>button:not(.admin-primary){min-height:48px;padding:0 20px;font-size:13px}
+.cloudinary-uploaders{gap:14px;margin-top:24px}
+.cloudinary-field{padding:18px}
+.cloudinary-field-head strong{font-size:14px}
+.cloudinary-field-head small,.cloudinary-status{font-size:12px;line-height:1.6}
+.cloudinary-upload-button{min-height:44px;padding:0 15px;font-size:12px}
+.cloudinary-empty{font-size:12px}
+.cloudinary-sort-hint{display:flex;align-items:center;gap:7px;margin-top:14px;color:#766e64;font-size:12px}
+.cloudinary-image-list{gap:10px}
+.cloudinary-image-item{gap:9px;padding:7px}
+.cloudinary-image-item img{width:56px;height:56px}
+.cloudinary-image-item span{max-width:175px;font-size:11px}
+.cloudinary-image-item span.cloudinary-thumb-label{color:#755360;font-weight:600}
+.cloudinary-image-item button{width:32px;height:32px}
+.cloudinary-image-item.is-reorderable{cursor:grab;user-select:none;transition:border-color .16s,opacity .16s,transform .16s,background .16s}
+.cloudinary-image-item.is-reorderable:active{cursor:grabbing}
+.cloudinary-image-grip{flex:0 0 auto;color:#897f76;cursor:grab}
+.cloudinary-image-item.is-image-dragging{opacity:.42;transform:scale(.97);cursor:grabbing}
+.cloudinary-image-item.is-image-drop-target{border-color:#a88392;background:#f3e9ed;transform:translateY(-2px)}
+.admin-login-card form{gap:21px}
+.admin-login-card label{font-size:14px}
+.admin-login-card input{min-height:52px;font-size:14px}
+.admin-login-card>small,.admin-setup p,.admin-login-card>p{font-size:14px}
+.admin-back-link{font-size:13px}
+.admin-error{font-size:13px}
+.admin-loading{font-size:14px}
+.admin-modal:has(.cloudinary-uploaders){width:min(100%,760px)}
+.admin-modal:has(.cloudinary-uploaders) .admin-fields{grid-template-columns:1fr 1fr;gap:17px 20px}
+.admin-modal:has(.cloudinary-uploaders) .admin-fields .span-2{grid-column:span 2}
+.admin-modal:has(.cloudinary-uploaders) .cloudinary-uploaders{margin-top:19px}
+.cloudinary-field.is-drop-active{border-color:#a88392;background:#f3e9ed;box-shadow:0 0 0 3px #a8839220}
+.cloudinary-field.is-drop-active .cloudinary-sort-hint{color:#714f5d}
+@media(max-width:920px){.admin-workspace{grid-template-columns:210px minmax(0,1fr)}.admin-content{padding:30px 24px}.admin-record{grid-template-columns:44px minmax(0,1fr) 95px auto;gap:10px;padding:12px}.admin-record-actions{gap:5px}}
+@media(max-width:650px){.admin-sidebar nav button{min-height:44px;min-width:100px;font-size:12px}.admin-topbar{height:66px}.admin-topbar>div:first-child span{font-size:8px}.admin-topbar>div:first-child strong{font-size:14px}.admin-user button{min-height:38px;font-size:11px}.admin-content{padding:26px 15px}.admin-page-title h1{font-size:49px}.admin-page-title p,.admin-list-heading p{font-size:13px}.admin-add{min-height:44px;font-size:13px}.admin-overview button{min-height:85px}.admin-overview button>span{font-size:11px}.admin-overview button>strong{font-size:26px}.admin-list-heading h2{font-size:25px}.admin-list-heading{gap:14px}.admin-search{width:100%}.admin-search input{height:44px;font-size:13px}.admin-reorder-hint{align-items:flex-start;font-size:12px;line-height:1.5}.admin-record{grid-template-columns:35px minmax(0,1fr) auto;gap:8px;padding:12px 8px}.admin-record-copy strong{font-size:14px}.admin-record-copy span{font-size:11px}.admin-publish{grid-column:3;grid-row:1;font-size:9px}.admin-record-actions{grid-column:2/4;grid-row:2;justify-content:flex-start;flex-wrap:wrap}.admin-record-actions button{min-height:38px}.admin-record-actions button.admin-order-button{width:38px;min-width:38px}.admin-modal>header{padding:17px}.admin-modal h2{font-size:23px}.admin-modal form{padding:17px}.admin-fields{gap:15px}.admin-modal:has(.cloudinary-uploaders) .admin-fields{grid-template-columns:1fr;gap:15px}.admin-modal:has(.cloudinary-uploaders) .admin-fields .span-2{grid-column:auto}.cloudinary-field{padding:13px}.cloudinary-image-item{flex-wrap:wrap}.cloudinary-image-item span{max-width:125px;font-size:10px}.cloudinary-image-item img{width:48px;height:48px}.admin-inquiry{padding:16px}.admin-inquiry-head strong{font-size:14px}.admin-inquiry-contact,.admin-inquiry-meta,.admin-inquiry p{font-size:12px}}
