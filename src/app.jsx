@@ -4,9 +4,10 @@ import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-do
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { FALLBACK_PROJECTS } from './data/projects.ts';
 import { GOOGLE_TESTIMONIALS } from './data/testimonials.ts';
+import { AnimatedStat } from './components/AnimatedStat.jsx';
+import { ClientLogoSection } from './components/ClientLogoSection.jsx';
 import ScrollStack, { ScrollStackItem } from './components/ScrollStack.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
-import { LogoLoop } from './components/LogoLoop.tsx';
 import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
 import './styles.css';
 import './pages.css';
@@ -15,14 +16,6 @@ import './components/BrandLogo.css';
 import './components/ClientLogos.css';
 
 const projects = FALLBACK_PROJECTS;
-const CLIENT_LOGOS = [
-  { src: '/photos/client-logos/client-01.webp', alt: 'Client logo 1', title: 'Client logo 1', height: 56 },
-  { src: '/photos/client-logos/client-02.webp', alt: 'Client logo 2', title: 'Client logo 2', height: 56 },
-  { src: '/photos/client-logos/client-03.png', alt: 'Client logo 3', title: 'Client logo 3', height: 56 },
-  { src: '/photos/client-logos/client-04.webp', alt: 'Client logo 4', title: 'Client logo 4', height: 56 },
-  { src: '/photos/client-logos/client-05.webp', alt: 'Client logo 5', title: 'Client logo 5', height: 56 },
-  { src: '/photos/client-logos/client-06.webp', alt: 'Client logo 6', title: 'Client logo 6', height: 56 },
-];
 
 function ReviewColumn({ reviews, duration, className = '' }) {
   return <div className={`reviews-column ${className}`}><div className="reviews-track" style={{ '--review-duration': `${duration}s` }}>
@@ -72,14 +65,14 @@ function HomePage() {
   return <main><Hero/>
     <section className="intro section-pad" id="intro"><div className="eyebrow"><span className="eyebrow-dot"/> Independent architecture practice <span className="eyebrow-line"/></div><div className="intro-content"><h1>We design <em>thoughtful spaces</em> for people and place.</h1><div className="intro-aside"><p>Techno Plus Associates is an architecture practice established in 1990. We create functional, beautiful spaces shaped by the people who use them and the places they belong to.</p><Link className="text-link" to="/about">Discover our practice <ArrowRight/></Link></div></div><div className="intro-image"><img src="/photos/aboutimg.png" alt="Techno Plus architecture project" loading="lazy"/><span>Spaces that connect people, place and purpose.</span></div></section>
     <section className="projects section-pad" id="projects"><div className="section-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work / Kerala</span><h2>Featured<br/><em>Projects</em></h2></div><div className="section-heading-side"><p>Homes, hospitality, commercial spaces and tourism destinations shaped by people and place.</p><Link className="round-link" to="/projects" aria-label="View all projects"><ArrowUpRight/></Link></div></div><ScrollStack className="featured-project-stack" useWindowScroll stackPosition="13%" itemDistance={88} itemStackDistance={26} itemScale={0.04} baseScale={0.78} dimAmount={0.24} holdDistance={220}>{featured.map((p, i) => <ScrollStackItem key={p.id} itemClassName="featured-stack-item"><Link className={`featured-project-link card-${i + 1}`} to={`/projects/${p.slug}`}><img src={p.coverImage} alt={p.title} loading={i < 2 ? 'eager' : 'lazy'}/><span className="featured-project-shade"/><span className="featured-project-number">{String(i + 1).padStart(2, '0')}</span><span className="featured-project-category">{p.category}</span><span className="featured-project-meta"><span><strong>{p.title}</strong><small>{p.location}</small></span><i><ArrowUpRight/></i></span></Link></ScrollStackItem>)}</ScrollStack></section>
-    <section className="stats section-pad" id="about"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our practice</span><h2>Creating with<br/><em>purpose since 1990.</em></h2><p>We combine careful listening, practical expertise and a deep respect for each site to make places that last.</p><Link className="text-link" to="/about">About Techno Plus <ArrowRight/></Link></div><div className="stats-list"><div className="stat"><strong>35<span>+</span></strong><span>Years of practice</span></div><div className="stat"><strong>60<span>+</span></strong><span>Built projects</span></div><div className="stat"><strong>15<span>+</span></strong><span>Kerala tourism projects</span></div><div className="stat"><strong>12<span>+</span></strong><span>Cities in India and abroad</span></div></div></section>
+    <section className="stats section-pad" id="about"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our practice</span><h2>Creating with<br/><em>purpose since 1990.</em></h2><p>We combine careful listening, practical expertise and a deep respect for each site to make places that last.</p><Link className="text-link" to="/about">About Techno Plus <ArrowRight/></Link></div><div className="stats-list"><AnimatedStat value={35} label="Years of practice"/><AnimatedStat value={60} label="Built projects"/><AnimatedStat value={15} label="Kerala tourism projects"/><AnimatedStat value={12} label="Cities in India and abroad"/></div></section>
     <section className="expertise section-pad" id="expertise"><div className="expertise-top"><span className="eyebrow"><span className="eyebrow-dot"/> What we do</span><h2>Spaces with<br/><em>meaning.</em></h2><p>From a family home to a public destination, we bring architecture, interiors and landscape together around real needs.</p></div><CinematicList items={[
       { id: '01', title: 'Architecture', location: 'Residential · Pattambi, Kerala', description: 'Homes, hospitality, commercial and institutional spaces.', src: '/photos/official-projects/satheeshan-1.jpg', alt: "Mr. Satheeshan's Residence in Pattambi", to: '/projects/satheeshan-residence' },
       { id: '02', title: 'Interiors', location: 'Techno Plus · Malappuram', description: 'Warm, considered interiors tailored to everyday life.', src: '/photos/official-projects/office1.jpg', alt: 'Interior at the Techno Plus office', to: '/projects/technoplus-office-malappuram' },
       { id: '03', title: 'Tourism & Landscape', location: 'Kundukadavu · Kerala', description: 'Destinations and public places rooted in Kerala.', src: '/photos/official-projects/project12.jpg', alt: 'Kundukadavu tourism destination in Kerala', to: '/projects/kundukadavu-tourism-destination' },
     ]}/></section>
     <section className="reviews section-pad"><div className="reviews-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Notes from our clients</span><h2>Words from<br/><em>the people we serve.</em></h2><p>Thoughtful feedback from the people who trusted us with their spaces.</p></div><div className="reviews-rating"><div className="reviews-google-mark">G</div><div><strong>4.8 <span>/ 5.0</span></strong><small><b>★★★★★</b> · {GOOGLE_TESTIMONIALS.length} Google reviews</small></div></div></div><div className="reviews-columns" aria-label="Client testimonials"><ReviewColumn reviews={reviewColumns[0]} duration={24}/><ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/><ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/></div></section>
-    <section className="client-logos section-pad" aria-labelledby="our-clients-title"><div className="client-logos-heading"><span className="eyebrow"><span className="eyebrow-dot"/> Trusted partnerships</span><h2 id="our-clients-title">Our <em>Clients</em></h2><p>Organizations we are proud to have worked with.</p></div><div className="client-logos-track"><LogoLoop logos={CLIENT_LOGOS} speed={60} direction="left" logoHeight={56} gap={112} hoverSpeed={0} fadeOut fadeOutColor="#efe4d6" ariaLabel="Our clients"/></div></section>
+    <ClientLogoSection/>
     <section className="contact section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Start a conversation</span><Link to="/contact" className="contact-title">Let's build<br/><em>with purpose.</em><ArrowUpRight/></Link><div className="contact-bottom"><span>Have a project in mind?</span><Link to="/contact">Get in touch <ArrowRight/></Link></div></section>
   </main>;
 }
@@ -89,10 +82,39 @@ function SiteFooter() {
 }
 
 function ScrollToTop() { const { pathname, hash } = useLocation(); useEffect(() => { if (hash) { requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); } else { window.scrollTo(0, 0); } }, [pathname, hash]); return null; }
+function MotionEnhancer() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const selectors = 'main > section, .page-hero-copy, .page-hero-image, .project-card, .wall-card, .stat, .tourism-list span, .phase-card, .story-copy, .story-image, .gallery-grid figure, .contact-detail, .expertise-list a, .reviews-rating';
+    const elements = Array.from(document.querySelectorAll(selectors));
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('motion-reveal', 'is-visible'));
+      return undefined;
+    }
+
+    document.documentElement.classList.add('motion-ready');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ isIntersecting, target }) => {
+        if (!isIntersecting) return;
+        target.classList.add('is-visible');
+        observer.unobserve(target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+    elements.forEach((element, index) => {
+      element.classList.add('motion-reveal');
+      element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`);
+      observer.observe(element);
+    });
+    return () => observer.disconnect();
+  }, [pathname]);
+  return null;
+}
 function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => { const id = window.setTimeout(() => setLoading(false), 2100); return () => window.clearTimeout(id); }, []);
-  return <BrowserRouter><ScrollToTop/>{loading && <Splash done={() => setLoading(false)}/>}<Header/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></BrowserRouter>;
+  return <BrowserRouter><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></BrowserRouter>;
 }
 
 createRoot(document.getElementById('root')).render(<App/>);
