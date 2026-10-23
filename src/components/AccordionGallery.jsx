@@ -5,9 +5,9 @@ import './AccordionGallery.css';
 export default function AccordionGallery({
   items,
   defaultIndex = 0,
-  accentColor = '#f9f8f6',
-  overlayColor = '#272520',
-  textColor = '#f9f8f6',
+  accentColor = '#FFFFFF',
+  overlayColor = '#000000',
+  textColor = '#FFFFFF',
   height = 460,
   gap = 10,
   radius = 4,

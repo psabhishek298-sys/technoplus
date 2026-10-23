@@ -25,12 +25,12 @@
   height: 20rem;
   padding: 2.5rem;
   border-radius: 28px;
-  background: light-dark(#ffffff, #18181b);
-  color: light-dark(#18181b, #fafafa);
+  background: light-dark(#FFFFFF, #3F403C);
+  color: light-dark(#3F403C, #FFFFFF);
   box-shadow:
-    0 0 0 1px light-dark(rgb(0 0 0 / 0.06), rgb(255 255 255 / 0.08)),
-    0 -12px 40px -16px rgb(0 0 0 / 0.35),
-    0 24px 48px -24px rgb(0 0 0 / 0.4);
+    0 0 0 1px light-dark(rgba(63, 64, 60, 0.06), rgba(255, 255, 255, 0.08)),
+    0 -12px 40px -16px rgba(63, 64, 60, 0.35),
+    0 24px 48px -24px rgba(63, 64, 60, 0.4);
   transform-origin: 50% 0;
   will-change: transform;
 }
@@ -39,7 +39,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: #000;
+  background: #3F403C;
   opacity: var(--scroll-stack-dim, 0);
   pointer-events: none;
 }

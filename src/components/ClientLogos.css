@@ -1,7 +1,7 @@
 .client-logos {
   padding-top: 50px;
   padding-bottom: 58px;
-  border-top: 1px solid #e1d9cd;
+  border-top: 1px solid #FFFFFF;
   background: var(--sand);
 }
 
@@ -21,13 +21,13 @@
 }
 
 .client-logos-heading h2 em {
-  color: #a88392;
+  color: #3F403C;
   font-style: normal;
 }
 
 .client-logos-heading p {
   margin: 0;
-  color: #625d54;
+  color: #3F403C;
   font-size: 11px;
   line-height: 1.6;
 }
@@ -47,7 +47,7 @@
   align-items: center;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid #d8cfc3;
+  border: 1px solid #FFFFFF;
   color: var(--ink);
   font: 500 12px/1 'DM Sans', sans-serif;
   letter-spacing: .04em;

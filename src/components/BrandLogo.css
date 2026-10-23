@@ -44,11 +44,11 @@
 }
 
 .header-light .brand-logo {
-  filter: invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, .55));
+  filter: invert(1) drop-shadow(0 1px 3px rgba(63, 64, 60, .55));
 }
 
 .header-light .primary-nav .gooey-nav__link {
-  text-shadow: 0 1px 4px rgba(0, 0, 0, .45);
+  text-shadow: 0 1px 4px rgba(63, 64, 60, .45);
 }
 
 .brand-logo {
@@ -79,7 +79,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, .55));
+  filter: invert(1) drop-shadow(0 1px 3px rgba(63, 64, 60, .55));
 }
 
 .splash-logo {

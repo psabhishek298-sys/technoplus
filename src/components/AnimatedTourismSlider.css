@@ -1,0 +1,18 @@
+.tourism-slider{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(210px,.88fr);gap:clamp(20px,4vw,56px);align-items:stretch}
+.tourism-slider-list{display:flex;flex-direction:column;border-top:1px solid rgba(63,64,60,.25)}
+.tourism-slider-item{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr) 18px;align-items:center;gap:13px;width:100%;min-height:65px;padding:12px 4px;border:0;border-bottom:1px solid rgba(63,64,60,.25);background:transparent;color:rgba(63,64,60,.76);text-align:left;cursor:pointer;overflow:hidden}
+.tourism-slider-item:focus-visible{outline:2px solid #3F403C;outline-offset:3px}
+.tourism-slider-item.is-active{color:#3F403C}
+.tourism-slider-number{font:500 9px 'DM Sans',sans-serif;letter-spacing:.08em;opacity:.55}
+.tourism-slider-title{display:inline-block;overflow:hidden;font:400 clamp(15px,1.3vw,19px)/1.35 Manrope,sans-serif;letter-spacing:-.035em}
+.tourism-slider-character{position:relative;display:inline-block;overflow:hidden;vertical-align:top}
+.tourism-slider-old-char,.tourism-slider-new-char{display:inline-block;white-space:pre}
+.tourism-slider-new-char{position:absolute;left:0;top:0}
+.tourism-slider-arrow{font-size:17px;opacity:0;transform:translate(-4px,4px);transition:opacity .3s,transform .3s}
+.tourism-slider-item.is-active .tourism-slider-arrow{opacity:1;transform:none}
+.tourism-slider-image-wrap{position:relative;min-height:390px;overflow:hidden;background:#FFFFFF}
+.tourism-slider-image-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:clip-path}
+.tourism-slider-image-caption{position:absolute;z-index:1;left:15px;right:15px;bottom:15px;padding:10px 12px;background:rgba(63,64,60,.78);color:#FFFFFF;font:500 9px 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;backdrop-filter:blur(8px)}
+@media(max-width:900px){.tourism-slider{grid-template-columns:minmax(0,1.1fr) minmax(180px,.9fr);gap:20px}.tourism-slider-item{min-height:58px;gap:8px;padding:10px 2px}.tourism-slider-number{font-size:8px}.tourism-slider-title{font-size:15px}.tourism-slider-image-wrap{min-height:360px}}
+@media(max-width:700px){.tourism-slider{grid-template-columns:1fr;gap:22px}.tourism-slider-list{order:2}.tourism-slider-image-wrap{order:1;min-height:260px;height:62vw;max-height:390px}.tourism-slider-item{min-height:53px;grid-template-columns:25px minmax(0,1fr) 18px}.tourism-slider-title{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.tourism-slider-item,.tourism-slider-arrow{transition:none}}

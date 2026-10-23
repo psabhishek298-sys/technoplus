@@ -56,8 +56,8 @@ function Header({ loading }) {
       activeIndex={activeIndex}
       onChange={(index) => navigate(navItems[index].to)}
       theme={lightHeader ? 'dark' : 'light'}
-      color="#F9F8F6"
-      activeTextColor="#3A342E"
+      color="#E0DAC9"
+      activeTextColor="#3F403C"
       size="sm"
       frame={false}
       animationTime={720}
@@ -120,7 +120,25 @@ function HomePage() {
       { id: '02', title: 'Interiors', location: 'Techno Plus · Malappuram', description: 'Warm, considered interiors tailored to everyday life.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580244/k5p8zwaefiofcwgd8yvx.jpg', alt: 'Interior at the Techno Plus office', to: '/projects/technoplus-office-malappuram' },
       { id: '03', title: 'Tourism & Landscape', location: 'Kundukadavu · Kerala', description: 'Destinations and public places rooted in Kerala.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/tx3ydf2088yqh9es3hxe.jpg', alt: 'Kundukadavu tourism destination in Kerala', to: '/projects/kundukadavu-tourism-destination' },
     ]}/></section>
-    <section className="reviews section-pad"><div className="reviews-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Notes from our clients</span><h2>Words from<br/><em>the people we serve.</em></h2><p>Thoughtful feedback from the people who trusted us with their spaces.</p></div><div className="reviews-rating"><div className="reviews-google-mark">G</div><div><strong>4.8 <span>/ 5.0</span></strong><small><b>★★★★★</b> · {testimonials.length} Google reviews</small></div></div></div><div className="reviews-columns" aria-label="Client testimonials"><ReviewColumn reviews={reviewColumns[0]} duration={24}/><ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/><ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/></div></section>
+    <section className="reviews section-pad" aria-labelledby="reviews-title">
+      <div className="reviews-heading">
+        <div className="reviews-rating" aria-label={`Rated 4.8 out of 5 from ${testimonials.length} Google reviews`}>
+          <span className="reviews-google-mark" aria-hidden="true">G</span>
+          <span className="reviews-rating-score">4.8 <i>/ 5.0</i></span>
+          <span className="reviews-rating-stars" aria-hidden="true">★★★★★</span>
+          <span className="reviews-rating-count">· {testimonials.length} Google Reviews</span>
+        </div>
+        <div className="reviews-heading-copy">
+          <h2 id="reviews-title">What our clients say</h2>
+          <p>Real feedback and experiences from the people who trust Techno + Associates with their spaces.</p>
+        </div>
+      </div>
+      <div className="reviews-columns" aria-label="Client testimonials">
+        <ReviewColumn reviews={reviewColumns[0]} duration={24}/>
+        <ReviewColumn reviews={reviewColumns[1]} duration={28} className="reviews-column-mid"/>
+        <ReviewColumn reviews={reviewColumns[2]} duration={26} className="reviews-column-last"/>
+      </div>
+    </section>
     <ClientLogoSection/>
     <section className="contact section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Start a conversation</span><div className="contact-main"><Link to="/contact" className="contact-title">Let's build<br/><em>with purpose.</em><ArrowUpRight/></Link><div className="contact-sketch"><ArchitecturalSketch/></div></div><div className="contact-bottom"><span>Have a project in mind?</span><Link to="/contact">Get in touch <ArrowRight/></Link></div></section>
   </main>;
@@ -129,7 +147,7 @@ function HomePage() {
 function SiteFooter() {
   const { pathname } = useLocation();
   if (pathname === '/admin') return null;
-  return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram, Kerala 676509</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919847012345">+91 98470 12345</a><a href="mailto:hello@techplus.com">hello@techplus.com</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Interiors · Landscape</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
+  return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919037000619">+91 9037 00 0619</a><a href="mailto:info@technoplus.in">info@technoplus.in</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Interiors · Landscape</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
 }
 
 function ScrollToTop() { const { pathname, hash } = useLocation(); useEffect(() => { if (hash) { requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); } else { window.scrollTo(0, 0); } }, [pathname, hash]); return null; }

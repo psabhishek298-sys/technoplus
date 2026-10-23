@@ -1,9 +1,10 @@
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Building2, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video } from 'lucide-react';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
-import ExpandingCards from './components/ExpandingCards.jsx';
+import AnimatedTourismSlider from './components/AnimatedTourismSlider.jsx';
 import { useSiteContent } from './firebase/SiteContentContext.jsx';
 import { firebaseReady } from './firebase/client.js';
 import { submitInquiry } from './firebase/content.js';
@@ -14,6 +15,41 @@ function PageHero({ kicker, title, accent, description, image, className = '' })
   return <section className={`page-hero ${className}`}><div className="page-hero-copy"><span className="eyebrow"><span className="eyebrow-dot"/>{kicker}</span><h1>{title}<br/><em>{accent}</em></h1>{description && <p>{description}</p>}</div>{image && <div className="page-hero-image"><img src={image} alt=""/></div>}</section>;
 }
 
+function ProjectsLandingHero({ projects }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const activeProject = projects[activeIndex];
+  const nextProject = projects[(activeIndex + 1) % projects.length];
+
+  useEffect(() => {
+    if (reduceMotion || projects.length < 2) return undefined;
+    const timer = window.setInterval(() => setActiveIndex((index) => (index + 1) % projects.length), 6200);
+    return () => window.clearInterval(timer);
+  }, [projects.length, reduceMotion]);
+
+  if (!activeProject) return <section className="projects-landing-hero projects-landing-empty" aria-label="Selected projects"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work · Kerala</span><h1>Spaces shaped<br/><em>around life.</em></h1><p>Explore architecture shaped by its place and the people who use it.</p><Link className="text-link" to="#project-wall">Explore projects <ArrowRight/></Link></div></section>;
+
+  return <section className="projects-landing-hero section-pad" aria-label="Selected architecture projects">
+    <motion.div className="projects-landing-copy" initial={reduceMotion ? false : { opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, ease: [.22, 1, .36, 1] }}>
+      <span className="eyebrow"><span className="eyebrow-dot"/> Selected work · Kerala</span>
+      <h1>Spaces shaped<br/><em>around life.</em></h1>
+      <p>Homes, workplaces and destinations designed with care for their place and the people who use them.</p>
+      <div className="projects-landing-actions"><a className="projects-hero-link" href="#project-wall">Explore the collection <ArrowDown size={15}/></a><span>{String(projects.length).padStart(2, '0')} projects · crafted with purpose</span></div>
+    </motion.div>
+    <div className="projects-landing-visual" aria-live="polite">
+      <div className="projects-landing-image-frame">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.img key={activeProject.id} className="projects-landing-image" src={activeProject.coverImage || activeProject.heroImage} alt={activeProject.title} loading={activeIndex < 2 ? 'eager' : 'lazy'} initial={reduceMotion ? false : { opacity: 0, x: 36, scale: 1.035 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={reduceMotion ? undefined : { opacity: 0, x: -28, scale: .985 }} transition={{ duration: .8, ease: [.22, 1, .36, 1] }}/>
+        </AnimatePresence>
+        <span className="projects-landing-shade"/>
+        <div className="projects-landing-caption"><span className="projects-landing-counter">{String(activeIndex + 1).padStart(2, '0')} <i/> {String(projects.length).padStart(2, '0')}</span><div><small>{activeProject.category || 'Architecture'}{activeProject.location ? ` · ${activeProject.location}` : ''}</small><strong>{activeProject.title}</strong></div><Link to={`/projects/${activeProject.slug}`} aria-label={`View ${activeProject.title}`}><ArrowUpRight size={19}/></Link></div>
+      </div>
+      {nextProject && <motion.div className="projects-landing-peek" key={`peek-${nextProject.id}`} initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65, delay: .15 }}><img src={nextProject.coverImage || nextProject.heroImage} alt="" loading="lazy"/><span>UP NEXT <b>{nextProject.title}</b></span></motion.div>}
+      <div className="projects-landing-controls" aria-label="Choose a featured project">{projects.map((project, index) => <button key={project.id} type="button" className={index === activeIndex ? 'is-active' : ''} aria-label={`Show ${project.title}`} aria-pressed={index === activeIndex} onClick={() => setActiveIndex(index)}><span/></button>)}<button className="projects-landing-next" type="button" aria-label="Next featured project" onClick={() => setActiveIndex((index) => (index + 1) % projects.length)}><ArrowRight size={16}/></button></div>
+    </div>
+  </section>;
+}
+
 export function ProjectsPage() {
   const { projects } = useSiteContent();
   const galleryProjects = useMemo(() => {
@@ -21,14 +57,8 @@ export function ProjectsPage() {
     return (featured.length ? featured : projects).filter((project) => project.coverImage || project.heroImage).slice(0, 6);
   }, [projects]);
   return <main className="subpage work-index">
-    <section className="projects-accordion-hero" aria-label="Project gallery animation">
-      <div className="projects-gallery-wrap">{galleryProjects.length ? <ExpandingCards items={galleryProjects.map((project) => {
-        const category = (project.category || '').toLowerCase();
-        const Icon = category.includes('residen') ? House : category.includes('hospit') ? Hotel : category.includes('tour') || category.includes('landscape') ? Trees : category.includes('institution') ? Landmark : Building2;
-        return { id: project.id, imgSrc: project.coverImage || project.heroImage, title: project.title, description: project.tagline || project.description || `${project.category || 'Architecture'} project · ${project.location || 'Kerala'}`, icon: <Icon size={22}/>, linkHref: `/projects/${project.slug}` };
-      })} defaultActiveIndex={0}/>: null}</div>
-    </section>
-    <section className="project-wall section-pad" aria-label={`${projects.length} projects`}>
+    <ProjectsLandingHero projects={galleryProjects}/>
+    <section className="project-wall section-pad" id="project-wall" aria-label={`${projects.length} projects`}>
       <div className="project-wall-grid">{projects.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
         <img className="wall-card-photo" src={p.coverImage || p.heroImage} alt={p.title} loading={i < 6 ? 'eager' : 'lazy'}/><span className="wall-card-shade"/>
         <span className="wall-card-number">{String(i + 1).padStart(2,'0')}</span><span className="wall-card-category">{p.category}</span>
@@ -37,14 +67,13 @@ export function ProjectsPage() {
     </section>
   </main>;
 }
-
 export function ProjectDetailPage() {
   const { slug } = useParams();
   const { projects } = useSiteContent();
   const project = projects.find(p => p.slug === slug);
   if (!project) return <main className="subpage"><PageHero kicker="Project" title="Project" accent="not found."/><section className="section-pad subpage-section"><Link className="text-link" to="/projects"><ArrowLeft/> Back to all projects</Link></section></main>;
   const gallery = project.gallery?.length ? project.gallery : [project.heroImage, project.coverImage].filter(Boolean);
-  return <main className="subpage project-detail"><section className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(23,22,20,.55),transparent 66%),url("${project.heroImage || project.coverImage}")`}}><Link className="back-link" to="/projects"><ArrowLeft/> All projects</Link><div className="detail-title"><span className="eyebrow"><span className="eyebrow-dot"/>{project.category} · {project.year || 'Techno Plus project'}</span><h1>{project.title}</h1><span className="detail-location"><MapPin size={15}/>{project.location}</span></div></section>
+  return <main className="subpage project-detail"><section className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(0, 0, 0, .55),transparent 66%),url("${project.heroImage || project.coverImage}")`}}><Link className="back-link" to="/projects"><ArrowLeft/> All projects</Link><div className="detail-title"><span className="eyebrow"><span className="eyebrow-dot"/>{project.category} · {project.year || 'Techno Plus project'}</span><h1>{project.title}</h1><span className="detail-location"><MapPin size={15}/>{project.location}</span></div></section>
     <section className="detail-intro section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Project overview</span><h2>{project.tagline}</h2></div><div><p>{project.description}</p>{project.concept && <p>{project.concept}</p>}<div className="detail-facts">{project.area && <span><small>Area</small>{project.area}</span>}{project.status && <span><small>Status</small>{project.status}</span>}{project.year && <span><small>Year</small>{project.year}</span>}</div></div></section>
     {project.materials?.length > 0 && <section className="detail-materials section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Materials & approach</span><div>{project.materials.map(m => <span key={m}>{m}</span>)}</div></section>}
     <section className="detail-gallery section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Project gallery</span><div className="gallery-grid">{gallery.map((src,i) => <figure key={`${src}-${i}`}><img src={src} alt={`${project.title} view ${i+1}`} loading="lazy"/></figure>)}</div></section>
@@ -55,7 +84,7 @@ export function AboutPage() {
   return <main className="subpage"><PageHero kicker="About Techno Plus" title="We design" accent="with purpose." description="Techno Plus Associates is an architecture practice established in 1990, creating thoughtful spaces that bring people, place and nature together." image="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/vrktg5loe7uvc0uefnnt.png"/>
     <section className="story-section section-pad" id="story"><div className="story-copy"><span className="eyebrow"><span className="eyebrow-dot"/> Our story</span><h2>A team shaping<br/>meaningful spaces.</h2><p className="story-lead">We are a team of highly skilled architects and designers who are passionate about creating beautiful, functional and sustainable buildings and spaces.</p><p>Techno Plus Associates was established by Mr. Vijayakumar in 1990. Over the years, the practice has completed residential homes, commercial buildings, institutional buildings and hospitality projects. We value attention to detail, creativity and close collaboration with our clients.</p><p>Aravind, our principal architect, has worked on government and private projects. After completing his B.Arch in 2016 from USD-Mysore (School of Planning and Architecture), he joined Techno Plus in 2017 and brought a dynamic outlook to the practice. His philosophy of blurring the boundaries between architecture, interiors and landscape initiated a new design direction.</p><p>We believe architecture can positively impact people’s lives. We are committed to sustainable, energy-efficient and environmentally responsible buildings and spaces, reducing environmental impact while enhancing quality of life.</p></div><div className="story-image"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580240/jizatjasol7b0k3kq5aq.jpg" alt="Techno Plus architecture" loading="lazy"/></div></section>
     <section className="stats section-pad about-stats"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our impact in numbers</span><h2>Experience<br/><em>built over time.</em></h2><p>From homes and workplaces to destinations across Kerala.</p></div><div className="stats-list"><AnimatedStat value={35} label="Years of practice"/><AnimatedStat value={60} label="Built projects"/><AnimatedStat value={12} label="Cities in India and abroad"/><AnimatedStat value={15} label="Tourism destinations in Kerala"/></div></section>
-    <section className="tourism-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Kerala Tourism</span><h2>Places that welcome<br/><em>people in.</em></h2><p>Techno Plus has been among Kerala Tourism’s empanelled architects for the past 10 years, completing more than 15 tourism destination projects across Kerala.</p></div><div className="tourism-list"><span>Cherumbu Eco Village · Karuvarakundu</span><span>Nilayoram Park · Kuttipuram</span><span>Mangalam Dam Garden · Palakkad</span><span>Pothundy Dam Garden</span><span>Beeyam Bridge · Ponnani</span><span>Marine Museum · Ponnani</span></div></section>
+    <section className="tourism-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Kerala Tourism</span><h2>Places that welcome<br/><em>people in.</em></h2><p>Techno Plus has been among Kerala Tourism’s empanelled architects for the past 10 years, completing more than 15 tourism destination projects across Kerala.</p></div><AnimatedTourismSlider/></section>
     <ClientLogoSection/>
   </main>;
 }
@@ -106,7 +135,7 @@ export function ContactPage() {
       form.reset();
       setFormStatus('Thank you. Your message has been sent to the studio.');
     } catch {
-      setFormStatus('We could not send your message right now. Please email hello@techplus.com.');
+      setFormStatus('We could not send your message right now. Please email info@technoplus.in.');
     } finally {
       setSubmitting(false);
     }
@@ -120,9 +149,11 @@ export function ContactPage() {
           <h1>Let's build<br/><em>meaningful.</em></h1>
           <p>We'd love to hear from you. Whether you have a question about our services, a project in mind, or anything else, our team is ready to help.</p>
           <div className="contact-quick-details">
-            <div><i><MapPin size={17}/></i><span><strong>Location</strong><small>Munduparamba, Malappuram, Kerala 676509</small></span></div>
-            <div><i><Mail size={17}/></i><span><strong>Email</strong><a href="mailto:hello@techplus.com">hello@techplus.com</a></span></div>
-            <div><i><Phone size={17}/></i><span><strong>Phone</strong><a href="tel:+919847012345">+91 98470 12345</a></span></div>
+            <div><i><MapPin size={17}/></i><span><strong>TechnoPlus Associates</strong><small>Munduparamba, Malappuram</small></span></div>
+            <div><i><Mail size={17}/></i><span><strong>Email</strong><a href="mailto:info@technoplus.in">info@technoplus.in</a></span></div>
+            <div><i><Phone size={17}/></i><span><strong>Call directly</strong><a href="tel:+919037000619">+91 9037 00 0619</a></span></div>
+            <div><i><Video size={17}/></i><span><strong>Skype</strong><small>technoplus</small></span></div>
+            <div className="contact-hours"><i><Clock3 size={17}/></i><span><strong>Work hours</strong><small>Monday – Friday: 08h00 – 17h30<br/>Saturday: 08h00 – 12h00<br/>Sunday: Off work</small></span></div>
           </div>
         </div>
         {firebaseReady ? <form className="contact-message-card" onSubmit={handleInquiry}>
@@ -131,13 +162,13 @@ export function ContactPage() {
           <label className="contact-field"><span>Email</span><span className="contact-input-wrap"><Mail size={16}/><input name="email" type="email" autoComplete="email" maxLength={200} placeholder="john@example.com" required/></span></label>
           <label className="contact-field"><span>Mobile number</span><span className="contact-input-wrap"><Phone size={16}/><input name="phone" type="tel" autoComplete="tel" maxLength={40} placeholder="+91 98765 43210" required/></span></label>
           <label className="contact-field"><span>Message</span><span className="contact-input-wrap contact-message-wrap"><MessageSquare size={16}/><textarea name="message" rows={4} maxLength={3000} placeholder="Tell us about your project..." required/></span></label>
-          <div className="contact-form-actions"><button className="contact-send-button" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'} <ArrowRight size={17}/></button><a className="contact-whatsapp-button" href={`https://wa.me/919847012345?text=${encodeURIComponent('Hello Techno Plus Associates, I would like to discuss a project.')}`} target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div>
+          <div className="contact-form-actions"><button className="contact-send-button" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'} <ArrowRight size={17}/></button><a className="contact-whatsapp-button" href={`https://wa.me/919037000619?text=${encodeURIComponent('Hello Techno Plus Associates, I would like to discuss a project.')}`} target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div>
           {formStatus && <p className={`contact-form-status ${formStatus.startsWith('Thank') ? 'is-success' : 'is-error'}`} role="status">{formStatus}</p>}
-        </form> : <div className="contact-message-card contact-form-offline"><span className="contact-form-kicker">Send us a message <i/></span><h2>We'd love to hear from you.</h2><p>Online enquiries are temporarily unavailable. You can reach the studio by email or WhatsApp.</p><div className="contact-form-actions"><a className="contact-send-button" href="mailto:hello@techplus.com">Email the studio <ArrowRight size={17}/></a><a className="contact-whatsapp-button" href="https://wa.me/919847012345" target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div></div>}
+        </form> : <div className="contact-message-card contact-form-offline"><span className="contact-form-kicker">Send us a message <i/></span><h2>We'd love to hear from you.</h2><p>Online enquiries are temporarily unavailable. You can reach the studio by email or WhatsApp.</p><div className="contact-form-actions"><a className="contact-send-button" href="mailto:info@technoplus.in">Email the studio <ArrowRight size={17}/></a><a className="contact-whatsapp-button" href="https://wa.me/919037000619" target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp</a></div></div>}
       </div>
     </section>
     <section className="contact-map-card" aria-labelledby="contact-map-title">
-      <div className="contact-map-heading"><div><h2 id="contact-map-title"><MapPin size={20}/> Visit our studio</h2><p>Techno + Associates, Munduparamba, Malappuram, Kerala 676509</p></div><a href={mapUrl} target="_blank" rel="noreferrer">Open in Google Maps <ArrowRight size={16}/></a></div>
+      <div className="contact-map-heading"><div><h2 id="contact-map-title"><MapPin size={20}/> Visit our studio</h2><p>TechnoPlus Associates, Munduparamba, Malappuram</p></div><a href={mapUrl} target="_blank" rel="noreferrer">Open in Google Maps <ArrowRight size={16}/></a></div>
       <div className="contact-map-frame"><iframe title="Techno Plus Associates location in Munduparamba, Malappuram" src="https://maps.google.com/maps?q=11.0505832%2C76.0931171&t=k&z=17&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/></div>
     </section>
   </main>;

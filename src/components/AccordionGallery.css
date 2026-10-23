@@ -1,7 +1,7 @@
 .accordion-gallery {
-  --ag-accent: #f9f8f6;
-  --ag-overlay: #272520;
-  --ag-text: #f9f8f6;
+  --ag-accent: #FFFFFF;
+  --ag-overlay: #3F403C;
+  --ag-text: #FFFFFF;
   --ag-gap: 10px;
   --ag-radius: 4px;
   --ag-media-size: 320px;
@@ -23,8 +23,8 @@
   min-height: 0;
   overflow: hidden;
   border-radius: var(--ag-radius);
-  background: #d9cfc7;
-  box-shadow: 0 16px 34px -22px rgba(39, 37, 32, .48);
+  background: #FFFFFF;
+  box-shadow: 0 16px 34px -22px rgba(63, 64, 60, .48);
   cursor: pointer;
   outline: none;
   text-decoration: none;
@@ -35,7 +35,7 @@
 }
 
 .ag-panel:focus-visible {
-  box-shadow: 0 0 0 2px var(--ag-accent), 0 16px 34px -22px rgba(39, 37, 32, .48);
+  box-shadow: 0 0 0 2px var(--ag-accent), 0 16px 34px -22px rgba(63, 64, 60, .48);
 }
 
 .ag-panel__frame { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
@@ -44,7 +44,7 @@
 .ag-panel__overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 34%, color-mix(in srgb, var(--ag-overlay) 82%, transparent) 100%), color-mix(in srgb, var(--ag-overlay) calc(var(--ag-dim) * 100%), transparent); transition: opacity .35s ease; }
 .ag-panel__label { position: absolute; left: clamp(16px, 2.2vw, 34px); right: 18px; bottom: clamp(18px, 2.5vw, 36px); display: flex; align-items: center; gap: 13px; pointer-events: none; z-index: 2; }
 .ag-panel__bar { flex: 0 0 3px; width: 3px; height: 34px; border-radius: 3px; background: var(--ag-accent); opacity: 0; box-shadow: 0 0 12px color-mix(in srgb, var(--ag-accent) 60%, transparent); }
-.ag-panel__text { display: flex; flex-direction: column; gap: 5px; min-width: 0; color: var(--ag-text); opacity: 0; transform: translateX(-14px); text-shadow: 0 2px 14px rgba(0,0,0,.55); }
+.ag-panel__text { display: flex; flex-direction: column; gap: 5px; min-width: 0; color: var(--ag-text); opacity: 0; transform: translateX(-14px); text-shadow: 0 2px 14px rgba(63, 64, 60, .55); }
 .ag-panel__text strong { overflow: hidden; font: 400 clamp(17px, 2.2vw, 32px)/1.1 CityBlueprint, sans-serif; white-space: nowrap; text-overflow: ellipsis; }
 .ag-panel__text small { font-size: 9px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 
