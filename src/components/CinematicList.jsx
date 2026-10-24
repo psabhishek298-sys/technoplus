@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { MoveRight } from 'lucide-react';
 import './CinematicList.css';
 
-export function CinematicList({ items }) {
-  return <div className="cinematic-list">
+export function CinematicList({ items, className = '' }) {
+  return <div className={`cinematic-list${className ? ` ${className}` : ''}`}>
     {items.map(item => <Link className="cinematic-list-item" key={item.id} to={item.to} aria-label={`${item.title} — ${item.description}`}>
       <div className="cinematic-list-image"><img src={item.src} alt={item.alt} loading="lazy"/><span/></div>
       <div className="cinematic-list-content">

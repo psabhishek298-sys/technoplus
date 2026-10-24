@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video } from 'lucide-react';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
-import AnimatedTourismSlider from './components/AnimatedTourismSlider.jsx';
+import { CinematicList } from './components/CinematicList.jsx';
 import { useSiteContent } from './firebase/SiteContentContext.jsx';
 import { firebaseReady } from './firebase/client.js';
 import { submitInquiry } from './firebase/content.js';
@@ -51,19 +51,36 @@ function ProjectsLandingHero({ projects }) {
 }
 
 export function ProjectsPage() {
-  const { projects } = useSiteContent();
+  const { projects, categories } = useSiteContent();
+  const [activeCategory, setActiveCategory] = useState('all');
+  const publishedCategories = useMemo(() => categories.filter((category) => category.published !== false), [categories]);
+  useEffect(() => {
+    if (activeCategory !== 'all' && !publishedCategories.some((category) => category.slug === activeCategory)) {
+      setActiveCategory('all');
+    }
+  }, [activeCategory, publishedCategories]);
+  const visibleProjects = activeCategory === 'all'
+    ? projects
+    : projects.filter((project) => project.category?.trim().toLowerCase() === publishedCategories.find((category) => category.slug === activeCategory)?.name?.trim().toLowerCase());
   const galleryProjects = useMemo(() => {
     const featured = projects.filter((project) => project.featured);
     return (featured.length ? featured : projects).filter((project) => project.coverImage || project.heroImage).slice(0, 6);
   }, [projects]);
   return <main className="subpage work-index">
     <ProjectsLandingHero projects={galleryProjects}/>
-    <section className="project-wall section-pad" id="project-wall" aria-label={`${projects.length} projects`}>
-      <div className="project-wall-grid">{projects.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
+    <section className="projects-filter-scene" aria-label="Filter projects by category">
+      <div className="projects-filter-image" aria-hidden="true"/>
+      <div className="projects-filter-row" role="group" aria-label="Project categories">
+        <button type="button" className={`filter-chip${activeCategory === 'all' ? ' selected' : ''}`} aria-pressed={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>All works</button>
+        {publishedCategories.map((category) => <button type="button" className={`filter-chip${activeCategory === category.slug ? ' selected' : ''}`} key={category.id || category.slug} aria-pressed={activeCategory === category.slug} onClick={() => setActiveCategory(category.slug)}>{category.name}</button>)}
+      </div>
+    </section>
+    <section className="project-wall section-pad" id="project-wall" aria-label={`${visibleProjects.length} projects`}>
+      {visibleProjects.length ? <div className="project-wall-grid">{visibleProjects.map((p, i) => <Link className="wall-card" to={`/projects/${p.slug}`} key={p.id}>
         <img className="wall-card-photo" src={p.coverImage || p.heroImage} alt={p.title} loading={i < 6 ? 'eager' : 'lazy'}/><span className="wall-card-shade"/>
         <span className="wall-card-number">{String(i + 1).padStart(2,'0')}</span><span className="wall-card-category">{p.category}</span>
         <span className="wall-card-caption"><span><strong>{p.title}</strong><small><MapPin size={12}/>{p.location}</small></span><i><ArrowRight size={17}/></i></span>
-      </Link>)}</div>
+      </Link>)}</div> : <p className="projects-empty-state">No projects are currently listed in this category.</p>}
     </section>
   </main>;
 }
@@ -84,7 +101,14 @@ export function AboutPage() {
   return <main className="subpage"><PageHero kicker="About Techno Plus" title="We design" accent="with purpose." description="Techno Plus Associates is an architecture practice established in 1990, creating thoughtful spaces that bring people, place and nature together." image="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/vrktg5loe7uvc0uefnnt.png"/>
     <section className="story-section section-pad" id="story"><div className="story-copy"><span className="eyebrow"><span className="eyebrow-dot"/> Our story</span><h2>A team shaping<br/>meaningful spaces.</h2><p className="story-lead">We are a team of highly skilled architects and designers who are passionate about creating beautiful, functional and sustainable buildings and spaces.</p><p>Techno Plus Associates was established by Mr. Vijayakumar in 1990. Over the years, the practice has completed residential homes, commercial buildings, institutional buildings and hospitality projects. We value attention to detail, creativity and close collaboration with our clients.</p><p>Aravind, our principal architect, has worked on government and private projects. After completing his B.Arch in 2016 from USD-Mysore (School of Planning and Architecture), he joined Techno Plus in 2017 and brought a dynamic outlook to the practice. His philosophy of blurring the boundaries between architecture, interiors and landscape initiated a new design direction.</p><p>We believe architecture can positively impact people’s lives. We are committed to sustainable, energy-efficient and environmentally responsible buildings and spaces, reducing environmental impact while enhancing quality of life.</p></div><div className="story-image"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580240/jizatjasol7b0k3kq5aq.jpg" alt="Techno Plus architecture" loading="lazy"/></div></section>
     <section className="stats section-pad about-stats"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our impact in numbers</span><h2>Experience<br/><em>built over time.</em></h2><p>From homes and workplaces to destinations across Kerala.</p></div><div className="stats-list"><AnimatedStat value={35} label="Years of practice"/><AnimatedStat value={60} label="Built projects"/><AnimatedStat value={12} label="Cities in India and abroad"/><AnimatedStat value={15} label="Tourism destinations in Kerala"/></div></section>
-    <section className="tourism-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Kerala Tourism</span><h2>Places that welcome<br/><em>people in.</em></h2><p>Techno Plus has been among Kerala Tourism’s empanelled architects for the past 10 years, completing more than 15 tourism destination projects across Kerala.</p></div><AnimatedTourismSlider/></section>
+    <section className="tourism-section section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Kerala Tourism</span><h2>Places that welcome<br/><em>people in.</em></h2><p>Techno Plus has been among Kerala Tourism’s empanelled architects for the past 10 years, completing more than 15 tourism destination projects across Kerala.</p></div><CinematicList className="cinematic-list--tourism" items={[
+      { id: '01', title: 'Cherumbu Eco Village', location: 'Karuvarakund · Malappuram', description: 'A riverside eco-tourism destination.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580250/xgxzjp4vaxiyv8klcy35.jpg', alt: 'Entrance to Cherumbu Eco Village', to: '/projects/cherumbu-eco-village' },
+      { id: '02', title: 'Nilayoram Park', location: 'Kuttipuram · Kerala', description: 'A park overlooking the Nila river.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/cfar0ynv0bh5xjsrnxz7.jpg', alt: 'Nilayoram Park on the banks of the Nila', to: '/projects/nilayoram-park' },
+      { id: '03', title: 'Mangalam Dam Garden', location: 'Palakkad · Kerala', description: 'A public landscape destination.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/tx3ydf2088yqh9es3hxe.jpg', alt: 'Landscape at Mangalam Dam Garden', to: '/projects' },
+      { id: '04', title: 'Pothundy Dam Garden', location: 'Palakkad · Kerala', description: 'A garden destination beside the dam.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580250/xgxzjp4vaxiyv8klcy35.jpg', alt: 'Pothundy Dam Garden', to: '/projects' },
+      { id: '05', title: 'Beeyam Bridge', location: 'Ponnani · Kerala', description: 'A public waterfront destination.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/tx3ydf2088yqh9es3hxe.jpg', alt: 'Beeyam Bridge in Ponnani', to: '/projects' },
+      { id: '06', title: 'Marine Museum', location: 'Ponnani · Kerala', description: 'A cultural destination by the coast.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580251/cfar0ynv0bh5xjsrnxz7.jpg', alt: 'Marine Museum in Ponnani', to: '/projects' },
+    ]}/></section>
     <ClientLogoSection/>
   </main>;
 }
@@ -92,7 +116,7 @@ export function AboutPage() {
 const phases = [
   { n:'01', title:'Discover', subtitle:'Understanding the client, site and requirements.', desc:'We begin with detailed site study: sun paths, prevailing winds, soil, neighbouring context and local bylaws. Conversations help us understand your lifestyle, spatial aspirations and priorities.', points:['Topographic & climatic site analysis','Client lifestyle & spatial brief','Zoning, FAR & regulatory feasibility','Initial budget & timeline framework'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580240/chjxzfmpkhudnndckhtx.jpg' },
   { n:'02', title:'Concept', subtitle:'Developing the architectural direction.', desc:'Through massing models, light studies and volumetric sketches, the core architectural idea takes shape. We establish the relationship between built form, open space, courtyards and circulation.', points:['Architectural concept narrative','Massing & circulation studies','Preliminary 3D spatial renderings','Mood & material boards'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580241/zkhf7ugma7nujldq5ikw.jpg' },
-  { n:'03', title:'Design', subtitle:'Refining form, materials, space and experience.', desc:'The approved concept develops into detailed architectural plans, sections and elevations. We consider finishes, joinery, acoustics and daylight throughout.', points:['Comprehensive architectural drawings','3D visualisations','Material & finish selection','Structural & MEP coordination'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580241/l50iq9h6gcg5u0k5wpor.jpg' },
+  { n:'03', title:'Design', subtitle:'Refining form, materials, space and experience.', desc:'The approved concept develops into detailed architectural plans, sections and elevations. We consider finishes, joinery, acoustics and daylight throughout.', points:['Comprehensive architectural drawings','3D visualisations','Material & finish selection'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580241/l50iq9h6gcg5u0k5wpor.jpg' },
   { n:'04', title:'Develop', subtitle:'Detailed drawings, documentation and coordination.', desc:'We prepare working drawings, joinery details, structural calculations and building services schematics, and assist with contractor coordination and statutory approvals.', points:['Construction drawings','Bill of quantities','Contractor & vendor documentation','Statutory approval submissions'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580241/g7oxt5xavrrisnybcqzc.jpg' },
   { n:'05', title:'Deliver', subtitle:'Bringing the design into reality.', desc:'Our architects and site coordinators make regular inspections to support craftsmanship and keep construction aligned with the design through to handover.', points:['On-site quality reviews','Mockup inspections','Landscape & lighting coordination','Final snagging & handover'], image:'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580237/khbalbstc0d58alb7fwr.jpg' },
 ];
