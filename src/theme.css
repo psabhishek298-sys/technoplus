@@ -127,8 +127,6 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 .cinematic-list-item:hover .cinematic-list-arrow,.cinematic-list-item:focus-visible .cinematic-list-arrow{
   border-color:var(--ink);background:var(--ink);color:#FFFFFF
 }
-.gooey-nav{--gn-ink:#3F403C!important;--gn-muted:rgba(63,64,60,.74)!important;--gn-frame:rgba(255,255,255,.9)!important;--gn-frame-edge:rgba(63,64,60,.15)!important;--gn-frame-highlight:#FFFFFF!important;--gn-frame-shadow:0 12px 32px rgba(63,64,60,.16)!important}
-.gooey-nav__link:focus-visible{outline-color:var(--ink)}
 .client-logos-heading h2,.client-logos-heading h2 em{color:var(--ink)}
 .client-logos .eyebrow-dot{background:var(--ink)}
 .logoloop{--logoloop-fadeColorAuto:#E0DAC9}

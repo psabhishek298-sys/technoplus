@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
@@ -8,7 +8,6 @@ import { SiteContentProvider, useSiteContent } from './firebase/SiteContentConte
 import AdminPage from './admin/AdminPage.jsx';
 import AccordionGallery from './components/AccordionGallery.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
-import GooeyNav from './components/GooeyNav.jsx';
 import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
 import './styles.css';
 import './pages.css';
@@ -37,7 +36,6 @@ function Splash({ done }) {
 
 function Header({ loading }) {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   if (pathname === '/admin') return null;
   const lightHeader = pathname === '/' || (pathname.startsWith('/projects/') && pathname !== '/projects');
   const navItems = [
@@ -47,26 +45,14 @@ function Header({ loading }) {
     { label: 'Our Process', to: '/procedure' },
     { label: 'Contact', to: '/contact' },
   ];
-  const activeIndex = Math.max(0, navItems.findIndex((item) => item.to === pathname || (item.to === '/projects' && pathname.startsWith('/projects/'))));
   return <header className={`header ${lightHeader ? 'header-light' : ''}`}>
     <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img key={loading ? 'loading-logo' : 'hero-logo'} className="brand-logo" src={loading ? '/techno-logo.svg?animation=loading' : '/techno-logo.svg?animation=hero'} alt="Techno+ Associates"/></Link>
-    <GooeyNav
-      items={navItems.map(({ label }) => ({ label }))}
-      initialActiveIndex={activeIndex}
-      activeIndex={activeIndex}
-      onChange={(index) => navigate(navItems[index].to)}
-      theme={lightHeader ? 'dark' : 'light'}
-      color="#E0DAC9"
-      activeTextColor="#3F403C"
-      size="sm"
-      frame={false}
-      animationTime={720}
-      particleCount={16}
-      spread={52}
-      gooeyness={0.62}
-      wobble={0.48}
-      className="primary-nav"
-    />
+    <nav className="primary-nav" aria-label="Main navigation">
+      <ul className="primary-nav-list">{navItems.map(({ label, to }) => {
+        const active = pathname === to || (to === '/projects' && pathname.startsWith('/projects/'));
+        return <li key={to}><NavLink to={to} end={to === '/'} className={`primary-nav-link${active ? ' is-active' : ''}`}>{label}</NavLink></li>;
+      })}</ul>
+    </nav>
   </header>;
 }
 
