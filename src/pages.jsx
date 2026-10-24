@@ -69,7 +69,6 @@ export function ProjectsPage() {
   return <main className="subpage work-index">
     <ProjectsLandingHero projects={galleryProjects}/>
     <section className="projects-filter-scene" aria-label="Filter projects by category">
-      <div className="projects-filter-image" aria-hidden="true"/>
       <div className="projects-filter-row" role="group" aria-label="Project categories">
         <button type="button" className={`filter-chip${activeCategory === 'all' ? ' selected' : ''}`} aria-pressed={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>All works</button>
         {publishedCategories.map((category) => <button type="button" className={`filter-chip${activeCategory === category.slug ? ' selected' : ''}`} key={category.id || category.slug} aria-pressed={activeCategory === category.slug} onClick={() => setActiveCategory(category.slug)}>{category.name}</button>)}

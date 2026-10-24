@@ -1,0 +1,135 @@
+/* Tighter section rhythm and clearer supporting text across the public site. */
+.intro{padding-top:68px;padding-bottom:60px}
+.projects{padding-top:44px;padding-bottom:38px}
+.stats{padding-top:42px;padding-bottom:44px}
+.expertise{padding-top:44px;padding-bottom:42px}
+.reviews{padding-top:42px;padding-bottom:44px}
+.client-logos{padding-top:34px;padding-bottom:36px}
+.contact{padding-top:50px;padding-bottom:22px}
+.section-heading{margin-bottom:38px}
+.intro-showcase{margin-top:20px}
+.expertise-top h2{margin-top:27px}
+.stats-intro h2{margin-top:24px}
+.contact-main{margin-bottom:20px}
+.eyebrow{font-size:10px}
+.intro-aside p,.section-heading-side p,.stats-intro>p,.expertise-top>p,.team-copy>p{font-size:15px;line-height:1.75}
+.section-heading-side p{font-size:14px}
+.expertise-list strong{font-size:21px}
+.expertise-list p{font-size:13px;line-height:1.65}
+.expertise-list a>span{font-size:10px}
+.stat>span{font-size:12px;line-height:1.55}
+.text-link,.projects-hero-link{font-size:12px}
+.project-meta h3{font-size:15px}
+.project-meta div>span,.project-type{font-size:11px}
+.intro-image span,.hero-caption,.scroll-indicator{font-size:11px}
+.reviews-heading p{font-size:14px;line-height:1.75}
+.reviews-rating-score{font-size:10px}
+.reviews-rating-count{font-size:9px}
+.reviews .review-card blockquote{font-size:13px;line-height:1.75}
+.review-author-copy strong{font-size:13px}
+.review-author-copy small{font-size:11px}
+.client-logos-heading p{font-size:13px}
+.projects-filter-scene{height:clamp(94px,11svh,126px);padding-bottom:15px}
+.projects-filter-row .filter-chip{font-size:11px;padding:11px 20px}
+.project-wall{padding-top:20px}
+.projects-landing-hero{min-height:clamp(560px,78svh,760px);padding-top:clamp(30px,4vh,48px);padding-bottom:clamp(36px,5vh,58px)}
+.projects-landing-copy>p{font-size:15px;line-height:1.75}
+.projects-landing-actions>span{font-size:10px}
+.projects-hero-link{font-size:12px}
+.projects-landing-caption small{font-size:10px}
+.projects-landing-counter{font-size:11px}
+.wall-card-category{font-size:10px}
+.wall-card-number{font-size:15px}
+.wall-card-caption small{font-size:10px}
+
+.page-hero{min-height:clamp(440px,66svh,590px);padding-top:58px;padding-bottom:58px}
+.subpage-section{padding-top:40px;padding-bottom:68px}
+.detail-materials{padding-top:22px;padding-bottom:34px}
+.detail-gallery{padding-top:28px}
+.next-step{padding-top:44px;padding-bottom:44px}
+.contact-note{padding-top:34px;padding-bottom:34px}
+.contact-map-card{margin-bottom:44px}
+.page-hero-copy>p,.detail-intro>div:nth-child(2)>p,.story-copy p,.tourism-section p,.people-card p,.phase-copy>p{font-size:15px;line-height:1.8}
+.story-section{padding-top:58px;padding-bottom:58px}
+.story-copy .story-lead{font-size:17px}
+.about-stats{padding-top:50px;padding-bottom:52px}
+.tourism-section{padding-top:54px;padding-bottom:54px;gap:9%}
+.people-section{padding-top:55px;padding-bottom:62px}
+.process-intro{padding-top:48px;padding-bottom:28px}
+.phase-list{padding-bottom:52px}
+.phase-card{padding:28px 0}
+.phase-copy li{font-size:12px;line-height:1.6}
+.contact-page{padding-top:58px;padding-bottom:58px}
+.contact-detail p,.contact-detail>a{font-size:14px;line-height:1.75}
+.detail-intro{padding-top:58px;padding-bottom:58px}
+.detail-gallery{padding-bottom:56px}
+.detail-materials>div span{font-size:11px}
+.projects-empty-state{font-size:15px}
+
+.footer{padding-top:42px;padding-bottom:16px}
+.footer-brand p{font-size:14px;line-height:1.65}
+.footer-links span{font-size:11px}
+.footer-links a{font-size:14px}
+.footer-bottom{margin-top:24px;font-size:11px}
+.footer-bottom>span:nth-child(2){font-size:13px}
+.expertise .eyebrow,.team .eyebrow{color:var(--ink)}
+.expertise .eyebrow-dot,.team .eyebrow-dot{background-color:var(--ink)}
+
+@media(max-width:900px){
+  .projects-landing-hero{min-height:72svh;padding-top:34px;padding-bottom:42px}
+  .projects-filter-scene{height:110px}
+  .tourism-section{gap:6%}
+}
+
+@media(max-width:700px){
+  .intro{padding-top:48px;padding-bottom:46px}
+  .intro-content{margin-top:20px}
+  .intro-image{margin-top:28px}
+  .projects{padding-top:38px;padding-bottom:34px}
+  .section-heading{margin-bottom:26px}
+  .stats{gap:24px;padding-top:36px;padding-bottom:38px}
+  .expertise{gap:24px;padding-top:36px;padding-bottom:38px}
+  .reviews{padding-top:36px;padding-bottom:38px}
+  .client-logos{padding-top:28px;padding-bottom:30px}
+  .contact{padding-top:40px;padding-bottom:20px}
+  .eyebrow{font-size:9px}
+  .intro-aside p,.section-heading-side p,.stats-intro>p,.expertise-top>p,.team-copy>p{font-size:14px}
+  .section-heading-side p{font-size:13px}
+  .expertise-top h2{margin-top:22px}
+  .expertise-list strong{font-size:19px}
+  .expertise-list p{font-size:13px}
+  .stat>span{font-size:11px}
+  .project-meta h3{font-size:13px}
+  .project-meta div>span,.project-type{font-size:10px}
+  .reviews-heading p{font-size:13px}
+  .reviews .review-card blockquote{font-size:13px}
+  .review-author-copy strong{font-size:12px}
+  .review-author-copy small{font-size:10px}
+  .projects-filter-scene{height:92px;padding:0 12px 12px}
+  .projects-filter-row .filter-chip{font-size:10px;padding:9px 14px}
+  .project-wall{padding-top:16px}
+  .projects-landing-hero{min-height:0;gap:24px;padding-top:34px;padding-bottom:42px}
+  .projects-landing-copy>p{font-size:14px}
+  .projects-landing-actions>span{font-size:9px}
+  .projects-landing-caption small{font-size:9px}
+  .wall-card-category{font-size:8px}
+  .wall-card-caption small{font-size:9px}
+  .page-hero{min-height:460px;padding-top:62px;padding-bottom:42px}
+  .page-hero-copy>p,.detail-intro>div:nth-child(2)>p,.story-copy p,.tourism-section p,.people-card p,.phase-copy>p{font-size:14px}
+  .story-section{gap:24px;padding-top:44px;padding-bottom:46px}
+  .story-copy .story-lead{font-size:16px}
+  .about-stats{padding-top:34px;padding-bottom:36px}
+  .tourism-section{gap:20px;padding-top:36px;padding-bottom:36px}
+  .people-section{padding-top:44px;padding-bottom:48px}
+  .process-intro{padding-top:40px;padding-bottom:24px}
+  .phase-list{padding-bottom:42px}
+  .phase-card,.phase-card.reverse{padding:18px 0}
+  .contact-page{padding-top:44px;padding-bottom:46px}
+  .detail-intro{padding-top:44px;padding-bottom:44px}
+  .detail-gallery{padding-bottom:44px}
+  .footer-brand p{font-size:13px}
+  .footer{padding-top:36px;padding-bottom:14px}
+  .footer-links a{font-size:13px}
+  .footer-bottom{margin-top:22px;font-size:10px}
+  .footer-bottom>span:nth-child(2){font-size:12px}
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
@@ -14,6 +14,7 @@ import './pages.css';
 import './components/BrandLogo.css';
 import './components/ClientLogos.css';
 import './theme.css';
+import './site-refinements.css';
 
 function ReviewColumn({ reviews, duration, className = '' }) {
   return <div className={`reviews-column ${className}`}><div className="reviews-track" style={{ '--review-duration': `${duration}s` }}>
@@ -45,7 +46,7 @@ function Header({ loading }) {
     { label: 'Our Process', to: '/procedure' },
     { label: 'Contact', to: '/contact' },
   ];
-  return <header className={`header ${lightHeader ? 'header-light' : ''}`}>
+  return <header className={`header ${lightHeader ? 'header-light' : ''} ${pathname === '/' ? 'home-header' : ''}`}>
     <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img key={loading ? 'loading-logo' : 'hero-logo'} className="brand-logo" src={loading ? '/techno-logo.svg?animation=loading' : '/techno-logo.svg?animation=hero'} alt="Techno+ Associates"/></Link>
     <nav className="primary-nav" aria-label="Main navigation">
       <ul className="primary-nav-list">{navItems.map(({ label, to }) => {
@@ -136,7 +137,7 @@ function SiteFooter() {
   return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919037000619">+91 9037 00 0619</a><a href="mailto:info@technoplus.in">info@technoplus.in</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Interiors · Landscape</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
 }
 
-function ScrollToTop() { const { pathname, hash } = useLocation(); useEffect(() => { if (hash) { requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); } else { window.scrollTo(0, 0); } }, [pathname, hash]); return null; }
+function ScrollToTop() { const { pathname, hash } = useLocation(); useLayoutEffect(() => { if (hash) { requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); } else { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } }, [pathname, hash]); return null; }
 function MotionEnhancer() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -172,4 +173,5 @@ function App() {
   return <BrowserRouter><SiteContentProvider><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header loading={loading}/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></SiteContentProvider></BrowserRouter>;
 }
 
+if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
 createRoot(document.getElementById('root')).render(<App/>);
