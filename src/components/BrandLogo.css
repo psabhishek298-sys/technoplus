@@ -54,10 +54,14 @@
   white-space: nowrap;
 }
 
-.primary-nav-link:hover,
-.primary-nav-link.is-active {
+.primary-nav-link:hover {
   background: #F2F1EF;
   color: #111111;
+}
+
+.primary-nav-link.is-active {
+  background: #000000;
+  color: #FFFFFF;
 }
 
 .header-light .brand-logo {
