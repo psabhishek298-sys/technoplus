@@ -1,7 +1,9 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
@@ -9,7 +11,8 @@ import { useSiteContent } from './firebase/SiteContentContext.jsx';
 import { firebaseReady } from './firebase/client.js';
 import { submitInquiry } from './firebase/content.js';
 import './projects.css';
-import './components/ProcedureAnimation.css';
+
+gsap.registerPlugin(ScrollTrigger);
 
 function PageHero({ kicker, title, accent, description, image, className = '' }) {
   return <section className={`page-hero ${className}`}><div className="page-hero-copy"><span className="eyebrow"><span className="eyebrow-dot"/>{kicker}</span><h1>{title}<br/><em>{accent}</em></h1>{description && <p>{description}</p>}</div>{image && <div className="page-hero-image"><img src={image} alt=""/></div>}</section>;
@@ -121,27 +124,62 @@ const phases = [
 ];
 
 export function ProcedurePage() {
+  const phaseListRef = useRef(null);
+  const phaseCurrentRef = useRef(null);
+  const phaseProgressRef = useRef(null);
+  const phaseProgressTrackRef = useRef(null);
+
   useLayoutEffect(() => {
-    const cards = Array.from(document.querySelectorAll('.phase-list .phase-card'));
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (!cards.length || reduceMotion || !('IntersectionObserver' in window)) return;
+    const phaseList = phaseListRef.current;
+    if (!phaseList || reduceMotion) return undefined;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
+    const cards = Array.from(phaseList.querySelectorAll('.phase-card'));
+    const progressFill = phaseProgressRef.current;
+    const progressTrack = phaseProgressTrackRef.current;
+    if (!cards.length) return undefined;
+
+    const context = gsap.context(() => {
+      cards.forEach((card, index) => {
+        const photo = card.querySelector('.phase-photo');
+        const copy = card.querySelectorAll('.phase-copy > .eyebrow, .phase-copy h2, .phase-copy h3, .phase-copy > p, .phase-copy li');
+        const hiddenClip = card.classList.contains('reverse') ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)';
+
+        gsap.set(photo, { clipPath: hiddenClip });
+        gsap.set(copy, { autoAlpha: 0, y: 24 });
+
+        const reveal = gsap.timeline({
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 76%',
+            toggleActions: 'play none play reverse',
+            onEnter: () => { if (phaseCurrentRef.current) phaseCurrentRef.current.textContent = phases[index].n; },
+            onEnterBack: () => { if (phaseCurrentRef.current) phaseCurrentRef.current.textContent = phases[index].n; },
+          },
+        });
+
+        reveal
+          .to(photo, { clipPath: 'inset(0 0% 0 0)', duration: 0.9, ease: 'power3.inOut' })
+          .to(copy, { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.065, ease: 'power2.out' }, '-=0.55');
       });
-    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
 
-    cards.forEach((card) => {
-      card.classList.add('phase-card-animated');
-      observer.observe(card);
-    });
+      gsap.set(progressFill, { scaleX: 0, transformOrigin: 'left center' });
+      ScrollTrigger.create({
+        trigger: phaseList,
+        start: 'top 78%',
+        end: 'bottom 48%',
+        onUpdate: ({ progress }) => {
+          const active = Math.min(cards.length - 1, Math.floor(progress * cards.length));
+          if (phaseCurrentRef.current) phaseCurrentRef.current.textContent = phases[active].n;
+          progressTrack?.setAttribute('aria-valuenow', String(active + 1));
+          gsap.set(progressFill, { scaleX: progress });
+        },
+      });
+    }, phaseList);
 
-    return () => observer.disconnect();
+    return () => context.revert();
   }, []);
-  return <main className="subpage"><PageHero kicker="Our procedure" title="From idea" accent="to space." description="Our structured five-phase procedure bridges creative thinking with practical coordination through construction." image="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580256/nrexryaqypc1ru1upzig.png"/><section className="process-intro section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> 5-phase architectural journey</span><p>We guide each project from the first conversations and site studies to the final details on site.</p></section><section className="phase-list section-pad">{phases.map((phase,i) => <article className={`phase-card ${i%2 ? 'reverse' : ''}`} key={phase.n}><div className="phase-photo"><img src={phase.image} alt={`${phase.title} phase`} loading="lazy"/></div><div className="phase-copy"><span className="eyebrow"><span className="eyebrow-dot"/> Phase {phase.n}</span><h2>{phase.title}</h2><h3>{phase.subtitle}</h3><p>{phase.desc}</p><ul>{phase.points.map(point => <li key={point}>{point}</li>)}</ul></div></article>)}</section><section className="next-step section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Ready to begin?</span><Link to="/contact" className="contact-title">Tell us<br/><em>what you imagine.</em><ArrowUpRight/></Link></section></main>;
+  return <main className="subpage"><PageHero kicker="Our procedure" title="From idea" accent="to space." description="Our structured five-phase procedure bridges creative thinking with practical coordination through construction." image="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580256/nrexryaqypc1ru1upzig.png"/><section className="process-intro section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> 5-phase architectural journey</span><p>We guide each project from the first conversations and site studies to the final details on site.</p></section><section className="phase-list section-pad" ref={phaseListRef}><div className="phase-progress"><span ref={phaseCurrentRef}>01</span><div className="phase-progress-track" ref={phaseProgressTrackRef} role="progressbar" aria-label="Procedure progress" aria-valuemin="1" aria-valuemax={phases.length} aria-valuenow="1"><i ref={phaseProgressRef}/></div><span>{phases[phases.length - 1].n}</span></div>{phases.map((phase,i) => <article className={`phase-card ${i%2 ? 'reverse' : ''}`} key={phase.n}><div className="phase-photo"><img src={phase.image} alt={`${phase.title} phase`} loading="lazy"/></div><div className="phase-copy"><span className="eyebrow"><span className="eyebrow-dot"/> Phase {phase.n}</span><h2>{phase.title}</h2><h3>{phase.subtitle}</h3><p>{phase.desc}</p><ul>{phase.points.map(point => <li key={point}>{point}</li>)}</ul></div></article>)}</section><section className="next-step section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Ready to begin?</span><Link to="/contact" className="contact-title">Tell us<br/><em>what you imagine.</em><ArrowUpRight/></Link></section></main>;
 }
 
 export function ContactPage() {

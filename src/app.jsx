@@ -142,7 +142,7 @@ function MotionEnhancer() {
   const { pathname } = useLocation();
   useEffect(() => {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const selectors = 'main > section, .page-hero-copy, .page-hero-image, .project-card, .wall-card, .stat, .tourism-list span, .phase-card, .story-copy, .story-image, .gallery-grid figure, .contact-detail, .expertise-list a, .reviews-rating';
+    const selectors = 'main > section, .page-hero-copy, .page-hero-image, .project-card, .wall-card, .stat, .tourism-list span, .story-copy, .story-image, .gallery-grid figure, .contact-detail, .expertise-list a, .reviews-rating';
     const elements = Array.from(document.querySelectorAll(selectors));
     if (reduceMotion || !('IntersectionObserver' in window)) {
       elements.forEach((element) => element.classList.add('motion-reveal', 'is-visible'));
