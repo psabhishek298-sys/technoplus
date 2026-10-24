@@ -41,6 +41,8 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 .eyebrow-line,.cinematic-list,.cinematic-list-item,.cinematic-list-end,.projects-filter-row,
 .client-logos{background:var(--sand);color:var(--ink);border-color:var(--palette-border)}
 .stats-list,.stat{border-color:rgba(63,64,60,.28)}
+.stats .eyebrow,.stats .stats-intro>p,.stats .stat>span,
+.stats .stat:hover strong,.stats .stat:hover strong span{color:var(--ink)}
 .stat:hover{background:rgba(255,255,255,.55);border-color:var(--ink)}
 .stat::after{background:linear-gradient(115deg,transparent 15%,rgba(255,255,255,.55) 48%,transparent 80%)}
 .round-link,.admin-primary,.contact-send-button,.contact-map-heading>a{
