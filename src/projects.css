@@ -13,7 +13,7 @@
 .projects-landing-actions>span{font-size:9px;letter-spacing:.08em;color:rgba(63,64,60,.62);text-transform:uppercase}
 .projects-landing-visual{position:relative;min-width:0;padding:0 8% 6% 0}
 .projects-landing-image-frame{position:relative;height:clamp(390px,66svh,670px);overflow:hidden;background:var(--sand);box-shadow:0 24px 60px rgba(63,64,60,.15)}
-.projects-landing-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;will-change:transform,opacity}
+.projects-landing-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .projects-landing-shade{position:absolute;inset:35% 0 0;background:linear-gradient(180deg,transparent,rgba(20,20,18,.62));pointer-events:none}
 .projects-landing-caption{position:absolute;right:clamp(18px,3vw,40px);bottom:clamp(18px,3vw,38px);left:clamp(18px,3vw,40px);display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:clamp(15px,2vw,28px);color:#FFFFFF}
 .projects-landing-counter{display:flex;align-items:center;gap:9px;padding-bottom:4px;font:500 10px 'DM Sans',sans-serif;letter-spacing:.1em}

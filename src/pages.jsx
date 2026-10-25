@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -20,36 +19,23 @@ function PageHero({ kicker, title, accent, description, image, backgroundImage, 
 }
 
 function ProjectsLandingHero({ projects }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const reduceMotion = useReducedMotion();
-  const activeProject = projects[activeIndex];
-  const nextProject = projects[(activeIndex + 1) % projects.length];
-
-  useEffect(() => {
-    if (reduceMotion || projects.length < 2) return undefined;
-    const timer = window.setInterval(() => setActiveIndex((index) => (index + 1) % projects.length), 6200);
-    return () => window.clearInterval(timer);
-  }, [projects.length, reduceMotion]);
+  const activeProject = projects[0];
 
   if (!activeProject) return <section className="projects-landing-hero projects-landing-empty" aria-label="Selected projects"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work · Kerala</span><h1>Spaces shaped<br/><em>around life.</em></h1><p>Explore architecture shaped by its place and the people who use it.</p><Link className="text-link" to="#project-wall">Explore projects <ArrowRight/></Link></div></section>;
 
   return <section className="projects-landing-hero section-pad" aria-label="Selected architecture projects">
-    <motion.div className="projects-landing-copy" initial={reduceMotion ? false : { opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, ease: [.22, 1, .36, 1] }}>
+    <div className="projects-landing-copy">
       <span className="eyebrow"><span className="eyebrow-dot"/> Selected work · Kerala</span>
       <h1>Spaces shaped<br/><em>around life.</em></h1>
       <p>Homes, workplaces and destinations designed with care for their place and the people who use them.</p>
       <div className="projects-landing-actions"><a className="projects-hero-link" href="#project-wall">Explore the collection <ArrowDown size={15}/></a><span>{String(projects.length).padStart(2, '0')} projects · crafted with purpose</span></div>
-    </motion.div>
+    </div>
     <div className="projects-landing-visual" aria-live="polite">
       <div className="projects-landing-image-frame">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.img key={activeProject.id} className="projects-landing-image" src={activeProject.coverImage || activeProject.heroImage} alt={activeProject.title} loading={activeIndex < 2 ? 'eager' : 'lazy'} initial={reduceMotion ? false : { opacity: 0, x: 36, scale: 1.035 }} animate={{ opacity: 1, x: 0, scale: 1 }} exit={reduceMotion ? undefined : { opacity: 0, x: -28, scale: .985 }} transition={{ duration: .8, ease: [.22, 1, .36, 1] }}/>
-        </AnimatePresence>
+        <img className="projects-landing-image" src={activeProject.coverImage || activeProject.heroImage} alt={activeProject.title} fetchPriority="high"/>
         <span className="projects-landing-shade"/>
-        <div className="projects-landing-caption"><span className="projects-landing-counter">{String(activeIndex + 1).padStart(2, '0')} <i/> {String(projects.length).padStart(2, '0')}</span><div><small>{activeProject.category || 'Architecture'}{activeProject.location ? ` · ${activeProject.location}` : ''}</small><strong>{activeProject.title}</strong></div><Link to={`/projects/${activeProject.slug}`} aria-label={`View ${activeProject.title}`}><ArrowUpRight size={19}/></Link></div>
+        <div className="projects-landing-caption"><span className="projects-landing-counter">01 <i/> {String(projects.length).padStart(2, '0')}</span><div><small>{activeProject.category || 'Architecture'}{activeProject.location ? ` · ${activeProject.location}` : ''}</small><strong>{activeProject.title}</strong></div><Link to={`/projects/${activeProject.slug}`} aria-label={`View ${activeProject.title}`}><ArrowUpRight size={19}/></Link></div>
       </div>
-      {nextProject && <motion.div className="projects-landing-peek" key={`peek-${nextProject.id}`} initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65, delay: .15 }}><img src={nextProject.coverImage || nextProject.heroImage} alt="" loading="lazy"/><span>UP NEXT <b>{nextProject.title}</b></span></motion.div>}
-      <div className="projects-landing-controls" aria-label="Choose a featured project">{projects.map((project, index) => <button key={project.id} type="button" className={index === activeIndex ? 'is-active' : ''} aria-label={`Show ${project.title}`} aria-pressed={index === activeIndex} onClick={() => setActiveIndex(index)}><span/></button>)}<button className="projects-landing-next" type="button" aria-label="Next featured project" onClick={() => setActiveIndex((index) => (index + 1) % projects.length)}><ArrowRight size={16}/></button></div>
     </div>
   </section>;
 }

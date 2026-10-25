@@ -793,6 +793,31 @@ iframe {
   padding-top: clamp(108px, 11vh, 132px);
 }
 
+.header-logo-white .brand-logo {
+  filter: invert(1) drop-shadow(0 1px 3px rgba(20, 20, 19, .55));
+}
+
+.header.header-logo-white .brand-logo {
+  width: auto;
+  height: 154px;
+  max-width: 130px;
+}
+
+.header.header-logo-white .wordmark {
+  position: absolute;
+  top: 20px;
+  left: var(--gutter);
+  transform: none;
+}
+
+@media (min-width: 701px) {
+  .work-index .projects-landing-copy > .eyebrow,
+  .about-page-hero .page-hero-copy > .eyebrow,
+  .process-page-hero .page-hero-copy > .eyebrow {
+    display: none;
+  }
+}
+
 /* Let the projects landing photo fill its hero like the About page background. */
 .work-index .projects-landing-hero {
   position: relative;
@@ -969,5 +994,48 @@ iframe {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
+  }
+}
+
+/* Center the mobile navigation independently of the brand mark so narrow phones don't crop it. */
+@media (max-width: 700px) {
+  .header,
+  body.on-projects .header {
+    position: absolute;
+    display: block;
+    height: calc(76px + env(safe-area-inset-top));
+    padding: 0;
+  }
+
+  .header .wordmark {
+    display: none;
+  }
+
+  .header .primary-nav,
+  .home-header .primary-nav {
+    position: absolute;
+    top: max(88px, calc(env(safe-area-inset-top) + 78px));
+    left: 50%;
+    width: min(calc(100vw - 24px), 520px);
+    max-width: none;
+    margin: 0;
+    padding: 3px;
+    transform: translateX(-50%);
+  }
+
+  .header .primary-nav {
+    top: max(14px, calc(env(safe-area-inset-top) + 8px));
+  }
+
+  .header .primary-nav-list {
+    gap: 0;
+    justify-content: space-between;
+  }
+
+  .header .primary-nav-link {
+    min-height: 36px;
+    padding-right: clamp(4px, 1.4vw, 10px);
+    padding-left: clamp(4px, 1.4vw, 10px);
+    font-size: clamp(8px, 2.6vw, 11px);
   }
 }

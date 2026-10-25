@@ -43,7 +43,9 @@ function Splash({ done }) {
 function Header({ loading }) {
   const { pathname } = useLocation();
   if (pathname === '/admin') return null;
+  const logoSource = `/techno-logo.svg?animation=${loading ? 'loading' : 'hero'}-${encodeURIComponent(pathname)}`;
   const lightHeader = pathname === '/' || (pathname.startsWith('/projects/') && pathname !== '/projects');
+  const whiteLogo = pathname === '/projects' || pathname === '/about' || pathname === '/procedure' || pathname.startsWith('/projects/');
   const navItems = [
     { label: 'Home', to: '/' },
     { label: 'Projects', to: '/projects' },
@@ -51,8 +53,8 @@ function Header({ loading }) {
     { label: 'Our Process', to: '/procedure' },
     { label: 'Contact', to: '/contact' },
   ];
-  return <header className={`header ${lightHeader ? 'header-light' : ''} ${pathname === '/' ? 'home-header' : ''}`}>
-    <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img key={loading ? 'loading-logo' : 'hero-logo'} className="brand-logo" src={loading ? '/techno-logo.svg?animation=loading' : '/techno-logo.svg?animation=hero'} alt="Techno+ Associates"/></Link>
+  return <header className={`header ${lightHeader ? 'header-light' : ''} ${whiteLogo ? 'header-logo-white' : ''} ${pathname === '/' ? 'home-header' : ''}`}>
+    <Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img key={logoSource} className="brand-logo" src={logoSource} alt="Techno+ Associates"/></Link>
     <nav className="primary-nav" aria-label="Main navigation">
       <ul className="primary-nav-list">{navItems.map(({ label, to }) => {
         const active = pathname === to || (to === '/projects' && pathname.startsWith('/projects/'));
