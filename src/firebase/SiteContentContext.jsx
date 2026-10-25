@@ -4,7 +4,8 @@ import { DEFAULT_CATEGORIES } from '../data/categories.ts';
 import { GOOGLE_TESTIMONIALS } from '../data/testimonials.ts';
 import { DEFAULT_HOME_EXPERTISE_ITEMS, DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
 import { DEFAULT_ABOUT_TOURISM_ITEMS } from '../data/aboutTourism.js';
-import { DEFAULT_CLIENTS, subscribePublicContent, subscribeSectionSettings } from './content.js';
+import { DEFAULT_CLIENTS } from '../data/clients.js';
+import { firebaseReady } from './config.js';
 
 const SiteContentContext = createContext(null);
 
@@ -18,21 +19,28 @@ export function SiteContentProvider({ children }) {
   const [aboutTourism, setAboutTourism] = useState(DEFAULT_ABOUT_TOURISM_ITEMS);
 
   useEffect(() => {
-    const safeSubscribe = (name, setter) => subscribePublicContent(name, (items) => {
-      setter(items);
-    }, (error) => console.warn(`Could not load public ${name}:`, error));
-    const unsubscribers = [
-      safeSubscribe('projects', setProjects),
-      safeSubscribe('categories', setCategories),
-      safeSubscribe('clients', setClients),
-      safeSubscribe('testimonials', setTestimonials),
-      safeSubscribe('homeExpertise', setHomeExpertise),
-      safeSubscribe('aboutTourism', setAboutTourism),
-      subscribeSectionSettings('homeExpertise', (settings) => {
-        setHomeExpertiseSection(settings || DEFAULT_HOME_EXPERTISE_SECTION);
-      }, (error) => console.warn('Could not load home section settings:', error)),
-    ];
-    return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
+    if (!firebaseReady) return undefined;
+    let active = true;
+    const unsubscribers = [];
+    import('./content.js').then(({ subscribePublicContent, subscribeSectionSettings }) => {
+      if (!active) return;
+      const safeSubscribe = (name, setter) => subscribePublicContent(name, setter, (error) => console.warn(`Could not load public ${name}:`, error));
+      unsubscribers.push(
+        safeSubscribe('projects', setProjects),
+        safeSubscribe('categories', setCategories),
+        safeSubscribe('clients', setClients),
+        safeSubscribe('testimonials', setTestimonials),
+        safeSubscribe('homeExpertise', setHomeExpertise),
+        safeSubscribe('aboutTourism', setAboutTourism),
+        subscribeSectionSettings('homeExpertise', (settings) => {
+          setHomeExpertiseSection(settings || DEFAULT_HOME_EXPERTISE_SECTION);
+        }, (error) => console.warn('Could not load home section settings:', error)),
+      );
+    }).catch((error) => console.warn('Could not initialize public content:', error));
+    return () => {
+      active = false;
+      unsubscribers.forEach((unsubscribe) => unsubscribe());
+    };
   }, []);
 
   const value = useMemo(() => ({ projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism }), [projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism]);

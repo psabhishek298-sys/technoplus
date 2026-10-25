@@ -1,18 +1,25 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
 import { SiteContentProvider, useSiteContent } from './firebase/SiteContentContext.jsx';
-import AdminPage from './admin/AdminPage.jsx';
+import { SEOHead } from './components/SEOHead.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
-import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
 import './styles.css';
 import './pages.css';
 import './components/BrandLogo.css';
 import './components/ClientLogos.css';
 import './theme.css';
 import './site-refinements.css';
+import './responsive.css';
+
+const AdminPage = lazy(() => import('./admin/AdminPage.jsx'));
+const AboutPage = lazy(() => import('./pages.jsx').then((module) => ({ default: module.AboutPage })));
+const ContactPage = lazy(() => import('./pages.jsx').then((module) => ({ default: module.ContactPage })));
+const ProcedurePage = lazy(() => import('./pages.jsx').then((module) => ({ default: module.ProcedurePage })));
+const ProjectDetailPage = lazy(() => import('./pages.jsx').then((module) => ({ default: module.ProjectDetailPage })));
+const ProjectsPage = lazy(() => import('./pages.jsx').then((module) => ({ default: module.ProjectsPage })));
 
 function ReviewColumn({ reviews, duration, className = '' }) {
   return <div className={`reviews-column ${className}`}><div className="reviews-track" style={{ '--review-duration': `${duration}s` }}>
@@ -127,7 +134,11 @@ function HomePage() {
 function SiteFooter() {
   const { pathname } = useLocation();
   if (pathname === '/admin') return null;
-  return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919037000619">+91 9037 00 0619</a><a href="mailto:info@technoplus.in">info@technoplus.in</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Interiors · Landscape</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
+  return <footer className="footer section-pad"><div className="footer-brand"><Link to="/" className="wordmark" aria-label="Techno+ Associates home"><img className="brand-logo" src="/techno-logo.svg" alt="Techno+ Associates"/></Link><p>Munduparamba<br/>Malappuram</p></div><div className="footer-links"><div><span>Explore</span><Link to="/projects">Projects</Link><Link to="/about">About us</Link><Link to="/procedure">Our process</Link><Link to="/contact">Contact</Link></div><div><span>Say hello</span><a href="tel:+919037000619">+91 9037 00 0619</a><a href="mailto:info@technoplus.in">info@technoplus.in</a></div></div><div className="footer-bottom"><span>© Techno Plus Associates</span><span>Architecture · Planning · Interiors</span><a href="#top" onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Back to top ↑</a></div></footer>;
+}
+
+function NotFoundPage() {
+  return <main className="subpage"><section className="page-hero not-found-hero"><div className="page-hero-copy"><span className="eyebrow"><span className="eyebrow-dot"/>404 · Page not found</span><h1>This page<br/><em>isn't here.</em></h1><p>The address may have changed. Browse our projects or return to the home page.</p><Link className="text-link" to="/">Return home <ArrowRight/></Link></div></section></main>;
 }
 
 function ScrollToTop() { const { pathname, hash } = useLocation(); useLayoutEffect(() => { if (hash) { requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })); } else { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } }, [pathname, hash]); return null; }
@@ -163,7 +174,7 @@ function MotionEnhancer() {
 function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => { const id = window.setTimeout(() => setLoading(false), 2100); return () => window.clearTimeout(id); }, []);
-  return <BrowserRouter><SiteContentProvider><ScrollToTop/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header loading={loading}/><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<ProjectsPage/>}/></Routes><SiteFooter/></SiteContentProvider></BrowserRouter>;
+  return <BrowserRouter><SiteContentProvider><ScrollToTop/><SEOHead/><MotionEnhancer/>{loading && <Splash done={() => setLoading(false)}/>}<Header loading={loading}/><Suspense fallback={<div role="status" aria-label="Loading page" style={{ minHeight: '60vh' }}/> }><Routes><Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/projects/:slug" element={<ProjectDetailPage/>}/><Route path="/procedure" element={<ProcedurePage/>}/><Route path="/contact" element={<ContactPage/>}/><Route path="/admin" element={<AdminPage/>}/><Route path="*" element={<NotFoundPage/>}/></Routes></Suspense><SiteFooter/></SiteContentProvider></BrowserRouter>;
 }
 
 if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';

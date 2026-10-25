@@ -1,0 +1,855 @@
+/* Final responsive pass for narrow phones, tablets, and touch-first browsers. */
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+}
+
+body {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+main,
+section,
+article,
+header,
+footer,
+nav,
+form,
+figure {
+  min-width: 0;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+.home-featured-grid {
+  align-items: start;
+  grid-auto-rows: auto;
+}
+
+.home-featured-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-self: start;
+}
+
+.home-featured-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  flex: 0 0 auto;
+  aspect-ratio: 1.05;
+  object-fit: cover;
+}
+
+.home-featured-card h3 {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.intro h1,
+.expertise-top h2 {
+  font-size: clamp(42px, 5.4vw, 76px) !important;
+}
+
+.header:not(.home-header) .wordmark {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.header-light:not(.home-header) .wordmark {
+  background: transparent;
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --gutter: clamp(18px, 4.2vw, 48px);
+  }
+
+  .intro-content {
+    grid-template-columns: minmax(0, 1.35fr) minmax(230px, .75fr);
+    gap: 5%;
+  }
+
+  .expertise,
+  .stats {
+    gap: 7%;
+  }
+
+  .contact-main {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr);
+  }
+
+  .footer {
+    column-gap: 6%;
+  }
+
+  .tourism-section {
+    gap: 6%;
+  }
+
+  .contact-landing-content {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    gap: clamp(24px, 4vw, 48px);
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --gutter: clamp(18px, 4vw, 36px);
+  }
+
+  .header {
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+  }
+
+  .primary-nav-link {
+    padding-right: clamp(10px, 1.6vw, 16px);
+    padding-left: clamp(10px, 1.6vw, 16px);
+  }
+
+  .home-featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-grid,
+  .gallery-grid {
+    gap: 16px;
+  }
+
+  .admin-workspace {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+
+  .admin-overview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-record {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  .admin-record-actions {
+    grid-column: 2 / -1;
+    justify-content: flex-start;
+  }
+
+  .admin-publish {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+}
+
+@media (max-width: 700px) {
+  :root {
+    --gutter: max(16px, env(safe-area-inset-left));
+  }
+
+  .section-pad {
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .header,
+  body.on-projects .header {
+    height: 76px;
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .home-header .wordmark {
+    margin-top: 5px;
+  }
+
+  .home-header .brand-logo {
+    width: 62px;
+    max-width: 62px;
+    height: 82px;
+  }
+
+  .header:not(.home-header) .brand-logo {
+    width: auto;
+    max-width: 56px;
+    height: 66px;
+  }
+
+  .header:not(.home-header) .wordmark {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .home-featured-card img {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .home-featured-card h3 {
+    margin-top: 9px;
+    font-size: clamp(13px, 3.6vw, 16px);
+    line-height: 1.4;
+  }
+
+  .primary-nav,
+  .home-header .primary-nav {
+    width: calc(100vw - 96px);
+    max-width: calc(100vw - 96px);
+    margin-left: auto;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .primary-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .primary-nav-list {
+    width: max-content;
+    min-width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  .primary-nav-link {
+    min-height: 38px;
+    padding: 0 clamp(7px, 2.2vw, 11px);
+    font-size: clamp(9px, 2.65vw, 11px);
+  }
+
+  .hero {
+    height: 100svh;
+    min-height: 400px;
+    max-height: 900px;
+  }
+
+  .hero-video {
+    object-position: center center;
+  }
+
+  .hero-caption {
+    max-width: 60%;
+    text-align: right;
+  }
+
+  .intro,
+  .projects,
+  .stats,
+  .expertise,
+  .reviews,
+  .client-logos,
+  .contact,
+  .footer {
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .intro-content,
+  .intro-showcase,
+  .stats,
+  .expertise,
+  .team,
+  .tourism-section,
+  .people-card,
+  .detail-intro,
+  .phase-card,
+  .contact-page,
+  .contact-landing-content,
+  .projects-landing-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .intro-content,
+  .expertise,
+  .tourism-section,
+  .phase-card,
+  .people-card,
+  .contact-landing-content {
+    gap: 24px;
+  }
+
+  .intro h1,
+  .section-heading h2,
+  .stats-intro h2,
+  .expertise-top h2,
+  .team-copy h2,
+  .story-copy h2,
+  .tourism-section h2,
+  .people-card h2,
+  .phase-copy h2,
+  .projects-landing-copy h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .project-grid,
+  .full-project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-card:nth-child(even) {
+    margin-top: 24px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .section-heading-side {
+    width: min(42%, 190px);
+  }
+
+  .project-meta {
+    gap: 5px;
+  }
+
+  .project-meta h3,
+  .project-meta div > span,
+  .project-type {
+    overflow-wrap: anywhere;
+  }
+
+  .projects-filter-scene {
+    height: auto;
+    min-height: 0;
+    padding: 16px max(var(--gutter), env(safe-area-inset-right)) 16px max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .projects-filter-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .projects-filter-row .filter-chip {
+    min-height: 40px;
+    padding: 9px 13px;
+    font-size: 9px;
+  }
+
+  .project-wall-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wall-card-category {
+    max-width: 56%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .projects-landing-visual {
+    padding-right: 5%;
+    padding-bottom: 10%;
+  }
+
+  .projects-landing-image-frame {
+    height: clamp(270px, 82vw, 460px);
+  }
+
+  .projects-landing-peek {
+    min-height: 90px;
+  }
+
+  .page-hero {
+    min-height: clamp(430px, 78svh, 600px);
+    padding-top: max(90px, calc(env(safe-area-inset-top) + 78px));
+    padding-bottom: 38px;
+  }
+
+  .page-hero-copy {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  .page-hero-image {
+    width: 100%;
+  }
+
+  .story-section,
+  .tourism-section,
+  .people-section,
+  .process-intro,
+  .phase-list,
+  .detail-intro,
+  .detail-gallery,
+  .contact-page {
+    padding-top: 40px;
+    padding-bottom: 42px;
+  }
+
+  .story-image,
+  .people-card img,
+  .phase-photo,
+  .contact-visual {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .gallery-grid figure,
+  .gallery-grid figure:nth-child(3n + 1) {
+    grid-column: auto;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .gallery-grid figure:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 9;
+  }
+
+  .phase-progress {
+    top: calc(env(safe-area-inset-top) + 78px);
+  }
+
+  .contact-landing {
+    margin-top: -76px;
+  }
+
+  .contact-landing-content {
+    min-height: auto;
+    padding-top: max(112px, calc(env(safe-area-inset-top) + 96px));
+    padding-bottom: 138px;
+  }
+
+  .contact-landing-copy h1 {
+    font-size: clamp(48px, 12vw, 76px);
+    overflow-wrap: anywhere;
+  }
+
+  .contact-message-card {
+    width: 100%;
+    max-width: 100%;
+    padding: clamp(18px, 5vw, 28px);
+    border-radius: 20px;
+  }
+
+  .contact-map-card {
+    width: calc(100% - max(24px, env(safe-area-inset-left)) - max(24px, env(safe-area-inset-right)));
+    padding: 14px;
+  }
+
+  .contact-map-heading > div,
+  .contact-map-heading p {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-map-heading > a {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .contact-map-frame {
+    height: clamp(260px, 78vw, 380px);
+  }
+
+  .reviews-rating {
+    max-width: 100%;
+    white-space: normal;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .client-logos-track {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .footer {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .footer-links a,
+  .footer-bottom > * {
+    overflow-wrap: anywhere;
+  }
+
+  .footer-bottom {
+    align-items: flex-start;
+    gap: 12px 16px;
+  }
+
+  .footer-bottom > span:nth-child(2) {
+    width: auto;
+    order: initial;
+  }
+
+  .admin-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    width: 100%;
+    height: auto;
+    padding: 10px max(12px, env(safe-area-inset-right)) 9px max(12px, env(safe-area-inset-left));
+  }
+
+  .admin-sidebar-brand {
+    padding: 0 4px 9px;
+  }
+
+  .admin-sidebar-brand img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .admin-nav-label,
+  .admin-sidebar-bottom {
+    display: none;
+  }
+
+  .admin-sidebar nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 0;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-sidebar nav button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 44px;
+    min-height: 42px;
+    gap: 7px;
+    padding: 0 10px;
+  }
+
+  .admin-sidebar nav button small {
+    margin-left: 0;
+  }
+
+  .admin-topbar {
+    position: relative;
+    gap: 12px;
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-left: max(14px, env(safe-area-inset-left));
+  }
+
+  .admin-user {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .admin-user > span {
+    max-width: min(38vw, 190px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-content {
+    width: 100%;
+    padding: 24px max(14px, env(safe-area-inset-right)) 36px max(14px, env(safe-area-inset-left));
+  }
+
+  .admin-page-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .admin-page-title h1 {
+    font-size: clamp(38px, 11vw, 52px);
+    overflow-wrap: anywhere;
+  }
+
+  .admin-page-title > button,
+  .admin-add {
+    width: 100%;
+  }
+
+  .admin-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .admin-overview button {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .admin-overview button > span {
+    min-width: 0;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-list-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-search {
+    width: 100%;
+  }
+
+  .admin-record {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+
+  .admin-record-copy strong,
+  .admin-record-copy span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-record-actions {
+    grid-column: 2 / -1;
+    flex-wrap: wrap;
+  }
+
+  .admin-record-actions button {
+    min-height: 42px;
+  }
+
+  .admin-modal-backdrop {
+    place-items: end center;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+
+  .admin-modal {
+    width: 100%;
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
+    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
+  }
+
+  .admin-modal > header {
+    gap: 14px;
+  }
+
+  .admin-modal form {
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
+  .admin-fields,
+  .admin-modal:has(.cloudinary-uploaders) .admin-fields,
+  .admin-section-settings .admin-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-fields .span-2,
+  .admin-modal:has(.cloudinary-uploaders) .admin-fields .span-2,
+  .admin-section-settings .admin-fields .span-2 {
+    grid-column: auto;
+  }
+
+  .admin-modal-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: var(--paper, #fff);
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --gutter: 14px;
+  }
+
+  .home-header .brand-logo {
+    width: 52px;
+    max-width: 52px;
+    height: 70px;
+  }
+
+  .primary-nav,
+  .home-header .primary-nav {
+    width: calc(100vw - 84px);
+    max-width: calc(100vw - 84px);
+  }
+
+  .primary-nav-link {
+    padding-right: 6px;
+    padding-left: 6px;
+    font-size: 9px;
+  }
+
+  .project-grid,
+  .full-project-grid {
+    gap: 10px;
+  }
+
+  .section-heading-side {
+    width: 38%;
+  }
+
+  .reviews-heading h2 {
+    font-size: clamp(35px, 10vw, 44px);
+  }
+
+  .contact-form-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer-links {
+    gap: 14px;
+  }
+
+  .admin-user > span {
+    display: none;
+  }
+
+  .admin-overview button > span {
+    font-size: 11px;
+  }
+}
+
+/* Keep the home services and About tourism cards crisp on phones. */
+@media (max-width: 700px) {
+  :is(.expertise, .tourism-section) .cinematic-list-image,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-image,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-image {
+    opacity: 1 !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-image > span {
+    background: none !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-id,
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-id,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-id,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-arrow {
+    color: #fff !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-copy small {
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .72);
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-id {
+    font-size: 12px !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong {
+    font-size: 24px !important;
+    line-height: 1.08 !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy small {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+}
+
+.projects-landing-hero {
+  padding-top: clamp(108px, 11vh, 132px);
+}
+
+@media (min-width: 701px) {
+  .page-hero {
+    padding-top: clamp(130px, 14vh, 165px);
+  }
+}
+
+@media (max-width: 700px) {
+  .projects-landing-hero {
+    padding-top: max(100px, calc(env(safe-area-inset-top) + 90px));
+  }
+
+  .contact-landing-copy > .eyebrow {
+    margin-top: 52px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: 300px;
+  }
+
+  .splash-center .splash-logo {
+    height: min(40vh, 120px);
+  }
+
+  .contact-landing-content {
+    padding-top: 120px;
+    padding-bottom: 140px;
+  }
+}
+
+@supports not (height: 100svh) {
+  .hero {
+    height: min(850px, 100vh);
+  }
+
+  .contact-landing,
+  .contact-landing-content {
+    min-height: 100vh;
+  }
+
+  .projects-landing-hero {
+    min-height: calc(100vh - 86px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
