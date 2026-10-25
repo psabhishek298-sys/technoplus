@@ -1,13 +1,15 @@
 import {
-  addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query,
-  serverTimestamp, updateDoc, where, writeBatch,
+  addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query,
+  serverTimestamp, setDoc, updateDoc, where, writeBatch,
 } from 'firebase/firestore';
 import { db, firebaseReady } from './client.js';
 import { FALLBACK_PROJECTS } from '../data/projects.ts';
 import { DEFAULT_CATEGORIES } from '../data/categories.ts';
 import { GOOGLE_TESTIMONIALS } from '../data/testimonials.ts';
+import { DEFAULT_HOME_EXPERTISE_ITEMS, DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
+import { DEFAULT_ABOUT_TOURISM_ITEMS } from '../data/aboutTourism.js';
 
-export const CONTENT_COLLECTIONS = ['projects', 'categories', 'clients', 'testimonials', 'inquiries'];
+export const CONTENT_COLLECTIONS = ['projects', 'categories', 'clients', 'testimonials', 'homeExpertise', 'aboutTourism', 'inquiries'];
 
 export const DEFAULT_CLIENTS = [
   { id: 'client-01', name: 'Sree Gokulam Group', logoPath: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580232/p3i0915rqppe19miec0h.webp', website: '', order: 1, published: true },
@@ -57,8 +59,119 @@ export function subscribeAdminContent(collectionName, onData, onError = () => {}
   }, onError);
 }
 
+export function subscribeSectionSettings(sectionId, onData, onError = () => {}) {
+  if (!firebaseReady) return () => {};
+  return onSnapshot(doc(db, 'siteSections', sectionId), (snapshot) => {
+    if (!snapshot.exists()) {
+      onData(null);
+      return;
+    }
+    const data = snapshot.data();
+    onData(sectionId === 'homeExpertise' ? {
+      id: snapshot.id,
+      name: data.name || data.kicker || DEFAULT_HOME_EXPERTISE_SECTION.name,
+      heading: data.accent ? `${data.heading || ''} ${data.accent}`.trim() : (data.heading || DEFAULT_HOME_EXPERTISE_SECTION.heading),
+      description: data.description || '',
+    } : { id: snapshot.id, ...data });
+  }, onError);
+}
+
+export async function saveSectionSettings(sectionId, value) {
+  if (!db) throw new Error('Firebase is not configured yet.');
+  const ref = doc(db, 'siteSections', sectionId);
+  const snapshot = await getDoc(ref);
+  const payload = {
+    name: String(value.name || ''),
+    heading: String(value.heading || ''),
+    description: String(value.description || ''),
+    published: true,
+    updatedAt: serverTimestamp(),
+  };
+  if (snapshot.exists()) return setDoc(ref, { ...payload, createdAt: snapshot.data().createdAt || serverTimestamp() });
+  return setDoc(ref, { ...payload, createdAt: serverTimestamp() });
+}
+
+export async function ensureHomeExpertiseDefaults() {
+  if (!db) throw new Error('Firebase is not configured yet.');
+  const settingsRef = doc(db, 'siteSections', 'homeExpertise');
+  const [settingsSnapshot, itemsSnapshot] = await Promise.all([
+    getDoc(settingsRef),
+    getDocs(collection(db, 'homeExpertise')),
+  ]);
+  // The settings document is the one-time migration marker. Keep it even when
+  // an admin intentionally removes every service card, so defaults do not
+  // unexpectedly reappear on the next sign-in.
+  if (settingsSnapshot.exists()) return 0;
+
+  const batch = writeBatch(db);
+  const timestamp = serverTimestamp();
+  let created = 0;
+  batch.set(settingsRef, {
+    ...DEFAULT_HOME_EXPERTISE_SECTION,
+    published: true,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  });
+  created += 1;
+  if (itemsSnapshot.empty) {
+    DEFAULT_HOME_EXPERTISE_ITEMS.forEach(({ id, ...item }) => {
+      batch.set(doc(db, 'homeExpertise', id), {
+        ...item,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+      created += 1;
+    });
+  }
+  if (created) await batch.commit();
+  return created;
+}
+
+export async function ensureAboutTourismDefaults() {
+  if (!db) throw new Error('Firebase is not configured yet.');
+  const markerRef = doc(db, 'siteSections', 'aboutTourismSeed');
+  const [markerSnapshot, itemsSnapshot] = await Promise.all([
+    getDoc(markerRef),
+    getDocs(collection(db, 'aboutTourism')),
+  ]);
+  // Keep the one-time marker when an admin removes every destination.
+  if (markerSnapshot.exists()) return 0;
+
+  const batch = writeBatch(db);
+  const timestamp = serverTimestamp();
+  batch.set(markerRef, { defaultsSeeded: true, createdAt: timestamp, updatedAt: timestamp });
+  let created = 0;
+  if (itemsSnapshot.empty) {
+    DEFAULT_ABOUT_TOURISM_ITEMS.forEach(({ id, ...item }) => {
+      batch.set(doc(db, 'aboutTourism', id), {
+        ...item,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+      created += 1;
+    });
+  }
+  await batch.commit();
+  return created;
+}
+
 export async function saveContent(collectionName, id, value) {
   if (!db) throw new Error('Firebase is not configured yet.');
+  if (collectionName === 'homeExpertise' || collectionName === 'aboutTourism') {
+    const ref = id ? doc(db, collectionName, id) : doc(collection(db, collectionName));
+    const snapshot = id ? await getDoc(ref) : null;
+    const payload = {
+      ...(collectionName === 'homeExpertise' ? { title: String(value.title || '') } : { name: String(value.name || '') }),
+      location: String(value.location || ''),
+      description: String(value.description || ''),
+      src: String(value.src || ''),
+      order: Number(value.order) || 1,
+      published: true,
+      updatedAt: serverTimestamp(),
+      createdAt: snapshot?.exists() ? snapshot.data().createdAt : serverTimestamp(),
+    };
+    return setDoc(ref, payload);
+  }
   const payload = { ...value, updatedAt: serverTimestamp() };
   if (id) return updateDoc(doc(db, collectionName, id), payload);
   return addDoc(collection(db, collectionName), { ...payload, createdAt: serverTimestamp() });

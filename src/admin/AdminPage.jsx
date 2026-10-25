@@ -4,7 +4,8 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { getDoc } from 'firebase/firestore';
 import { ArrowDown, ArrowLeft, ArrowUp, BriefcaseBusiness, Building2, FolderKanban, GripVertical, LogOut, MessageSquareQuote, Plus, Search, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 import { auth, db, firebaseReady } from '../firebase/client.js';
-import { docRef, importCurrentSiteContent, markInquiryStatus, removeContent, saveContent, saveContentOrder, subscribeAdminContent } from '../firebase/content.js';
+import { docRef, ensureAboutTourismDefaults, ensureHomeExpertiseDefaults, importCurrentSiteContent, markInquiryStatus, removeContent, saveContent, saveContentOrder, saveSectionSettings, subscribeAdminContent, subscribeSectionSettings } from '../firebase/content.js';
+import { DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
 import { useSiteContent } from '../firebase/SiteContentContext.jsx';
 import CloudinaryImageField from './CloudinaryImageField.jsx';
 import './admin.css';
@@ -14,6 +15,8 @@ const TABS = [
   { id: 'categories', label: 'Categories', icon: BriefcaseBusiness },
   { id: 'clients', label: 'Clients', icon: Building2 },
   { id: 'testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+  { id: 'homeExpertise', label: 'Home services', icon: Building2 },
+  { id: 'aboutTourism', label: 'About destinations', icon: Building2 },
   { id: 'inquiries', label: 'Inquiries', icon: Users },
 ];
 const NAV_TABS = [{ id: 'overview', label: 'Overview', icon: Building2 }, ...TABS];
@@ -36,9 +39,21 @@ const EDITORS = {
     { key: 'name', label: 'Name', required: true }, { key: 'location', label: 'Location' },
     { key: 'quote', label: 'Testimonial', type: 'textarea', required: true }, { key: 'rating', label: 'Rating (1–5)', type: 'number', required: true },
   ],
+  homeExpertise: [
+    { key: 'title', label: 'Name', required: true },
+    { key: 'location', label: 'Location', required: true },
+    { key: 'description', label: 'Description', type: 'textarea', required: true },
+    { key: 'order', label: 'Position', type: 'number', required: true },
+  ],
+  aboutTourism: [
+    { key: 'name', label: 'Name', required: true },
+    { key: 'description', label: 'Description', type: 'textarea', required: true },
+    { key: 'location', label: 'Location', required: true },
+    { key: 'order', label: 'Position', type: 'number', required: true },
+  ],
 };
 
-const EMPTY_DATA = { projects: [], categories: [], clients: [], testimonials: [], inquiries: [] };
+const EMPTY_DATA = { projects: [], categories: [], clients: [], testimonials: [], homeExpertise: [], aboutTourism: [], inquiries: [] };
 const formatDate = (value) => value?.toDate ? value.toDate().toLocaleString() : 'Just now';
 const plural = (count, label) => `${count} ${label}${count === 1 ? '' : 's'}`;
 const toSlug = (value) => value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -56,6 +71,7 @@ export default function AdminPage() {
   const [editing, setEditing] = useState(null);
   const [formError, setFormError] = useState('');
   const [notice, setNotice] = useState('');
+  const [sectionSettings, setSectionSettings] = useState(DEFAULT_HOME_EXPERTISE_SECTION);
   const [draggedProjectId, setDraggedProjectId] = useState('');
   const syncedUser = useRef('');
   const { categories: siteCategories } = useSiteContent();
@@ -97,17 +113,20 @@ export default function AdminPage() {
         return next;
       });
     }, (error) => setNotice(error.message || 'Could not load records.')));
-    return () => unsubscribe.forEach((stop) => stop());
+    const settingsStop = subscribeSectionSettings('homeExpertise', (settings) => {
+      if (settings) setSectionSettings(settings);
+    }, (error) => setNotice(error.message || 'Could not load home section settings.'));
+    return () => { unsubscribe.forEach((stop) => stop()); settingsStop(); };
   }, [authState]);
 
   useEffect(() => {
     if (authState !== 'admin' || !adminUser?.uid || syncedUser.current === adminUser.uid) return;
     syncedUser.current = adminUser.uid;
     let active = true;
-    importCurrentSiteContent().then((imported) => {
+    Promise.all([importCurrentSiteContent(), ensureHomeExpertiseDefaults(), ensureAboutTourismDefaults()]).then(([imported]) => {
       if (!active) return;
       setNotice(imported
-        ? `Added ${imported} existing website records to Admin: missing projects, categories, client logos and testimonials. Nothing was removed or overwritten.`
+        ? `Added ${imported} existing website records to Admin. Nothing was removed or overwritten.`
         : 'All existing website projects, categories, client logos and testimonials are already in Admin. Nothing was removed.');
     }).catch((error) => {
       if (!active) return;
@@ -199,14 +218,46 @@ export default function AdminPage() {
       values.order = editing.order || (Math.max(0, ...records.testimonials.map((item) => Number(item.order) || 0)) + 1);
       values.published = true;
     }
+    if (activeTab === 'homeExpertise') {
+      if (!editing.src) {
+        setFormError('Upload a photo before saving.');
+        return;
+      }
+      values.src = editing.src;
+      values.published = true;
+      values.order = Math.max(1, Number(values.order) || 1);
+    }
+    if (activeTab === 'aboutTourism') {
+      if (!editing.src) {
+        setFormError('Upload a photo before saving.');
+        return;
+      }
+      values.src = editing.src;
+      values.published = true;
+      values.order = Math.max(1, Number(values.order) || 1);
+    }
     setBusy(true);
     setFormError('');
     try {
       await saveContent(activeTab, editing?.id, values);
       setEditing(null);
-      setNotice(`${activeTab.slice(0, -1)} saved.`);
+      setNotice(`${editingLabel} saved.`);
     } catch (error) {
       setFormError(error.message || 'Could not save. Check the Firebase project and security rules.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleSaveSectionSettings = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    setNotice('');
+    try {
+      await saveSectionSettings('homeExpertise', sectionSettings);
+      setNotice('Home section content saved.');
+    } catch (error) {
+      setNotice(error.message || 'Could not save home section content.');
     } finally {
       setBusy(false);
     }
@@ -276,11 +327,14 @@ export default function AdminPage() {
   </section></main>;
 
   const editingFields = EDITORS[activeTab] || [];
+  const editingLabel = activeTab === 'homeExpertise' ? 'home service' : activeTab === 'aboutTourism' ? 'destination' : activeTab === 'categories' ? 'category' : activeTab === 'clients' ? 'client' : activeTab.slice(0, -1);
   const newRecord = () => {
     const base = activeTab === 'projects' ? { title: '', slug: '', category: siteCategories[0]?.name || '', location: '', year: new Date().getFullYear(), tagline: '', description: '', galleryText: '', coverImage: '', heroImage: '', featured: false, published: true } :
       activeTab === 'categories' ? { name: '', slug: '', published: true } :
       activeTab === 'clients' ? { name: '', website: '', logoPath: '', published: true } :
-        { name: '', location: '', quote: '', rating: 5, published: true };
+        activeTab === 'homeExpertise' ? { title: '', location: '', description: '', src: '', published: true } :
+        activeTab === 'aboutTourism' ? { name: '', location: '', description: '', src: '', published: true } :
+          { name: '', location: '', quote: '', rating: 5, published: true };
     const maxOrder = Math.max(0, ...currentItems.map((item) => item.order || 0));
     return { ...base, order: maxOrder + 1 };
   };
@@ -289,18 +343,21 @@ export default function AdminPage() {
   return <main className="admin-workspace">
     <aside className="admin-sidebar"><Link to="/" className="admin-sidebar-brand"><img src="/techno-logo.svg" alt="Techno Plus"/><span>STUDIO ADMIN</span></Link><div className="admin-nav-label">CONTENT</div><nav>{NAV_TABS.map(({ id, label, icon: Icon }) => <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => { setActiveTab(id); setSearch(''); setNotice(''); }}><Icon size={17}/><span>{label}</span>{id !== 'overview' && <small>{records[id].length}</small>}</button>)}</nav><div className="admin-sidebar-bottom"><Link to="/" target="_blank"><ArrowLeft size={15}/> View website</Link><span><ShieldCheck size={14}/> Admin protected</span></div></aside>
     <section className="admin-main"><header className="admin-topbar"><div><span>TECHNO PLUS ASSOCIATES</span><strong>Content management</strong></div><div className="admin-user"><span>{adminUser?.email}</span><button onClick={() => signOut(auth)} aria-label="Sign out"><LogOut size={16}/> Sign out</button></div></header>
-      <div className="admin-content"><div className="admin-page-title"><div><span className="admin-eyebrow">{activeTab === 'overview' ? 'STUDIO OVERVIEW' : 'CONTENT MANAGEMENT'}</span><h1>{activeTab === 'overview' ? <>Good day<span>.</span></> : <>{TABS.find((tab) => tab.id === activeTab)?.label}<span>.</span></>}</h1><p>{activeTab === 'overview' ? 'Your website content at a glance.' : `Manage ${activeTab} published across your website.`}</p></div>{activeTab !== 'overview' && activeTab !== 'inquiries' && <button className="admin-primary admin-add" onClick={() => { setFormError(''); setEditing(newRecord()); }}><Plus size={17}/> Add {activeTab === 'projects' ? 'project' : activeTab === 'categories' ? 'category' : activeTab === 'clients' ? 'client logo' : 'testimonial'}</button>}</div>
+      <div className="admin-content"><div className="admin-page-title"><div><span className="admin-eyebrow">{activeTab === 'overview' ? 'STUDIO OVERVIEW' : 'CONTENT MANAGEMENT'}</span><h1>{activeTab === 'overview' ? <>Good day<span>.</span></> : <>{TABS.find((tab) => tab.id === activeTab)?.label}<span>.</span></>}</h1><p>{activeTab === 'overview' ? 'Your website content at a glance.' : `Manage ${TABS.find((tab) => tab.id === activeTab)?.label.toLowerCase()} published across your website.`}</p></div>{activeTab !== 'overview' && activeTab !== 'inquiries' && <button className="admin-primary admin-add" onClick={() => { setFormError(''); setEditing(newRecord()); }}><Plus size={17}/> Add {activeTab === 'projects' ? 'project' : activeTab === 'categories' ? 'category' : activeTab === 'clients' ? 'client logo' : activeTab === 'homeExpertise' ? 'service' : activeTab === 'aboutTourism' ? 'destination' : 'testimonial'}</button>}</div>
         {activeTab === 'overview' && <div className="admin-overview">{TABS.map(({ id, label, icon: Icon }) => <button key={id} className="" onClick={() => { setActiveTab(id); setSearch(''); }}><span><Icon size={17}/>{label}</span><strong>{records[id].length}</strong></button>)}</div>}
         {activeTab === 'overview' && authState === 'admin' && <div className="admin-import"><div><strong>Sync website content</strong><p>Add any missing projects, categories, client logos and testimonials from the current site to Firebase. Existing records are kept; future edits from here publish to the website.</p></div><button onClick={handleImport} disabled={busy}>{busy ? 'Syncing…' : 'Sync missing content'}</button></div>}
         {notice && <div className="admin-notice" role="status">{notice}<button onClick={() => setNotice('')} aria-label="Dismiss"><X size={15}/></button></div>}
-        {activeTab !== 'overview' && <><div className="admin-list-heading"><div><h2>{TABS.find((tab) => tab.id === activeTab)?.label}</h2><p>{activeTab === 'inquiries' ? 'Private contact messages. Only approved admins can read them.' : 'Only published records appear on the public website.'}</p></div><label className="admin-search"><Search size={16}/><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Search ${activeTab}…`}/></label></div>
+        {activeTab !== 'overview' && <><div className="admin-list-heading"><div><h2>{TABS.find((tab) => tab.id === activeTab)?.label}</h2><p>{activeTab === 'inquiries' ? 'Private contact messages. Only approved admins can read them.' : activeTab === 'homeExpertise' ? 'Edit the homepage section and manage its service cards.' : activeTab === 'aboutTourism' ? 'Manage the destinations shown in the About page tourism section.' : 'Only published records appear on the public website.'}</p></div><label className="admin-search"><Search size={16}/><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Search ${activeTab}…`}/></label></div>
+        {activeTab === 'homeExpertise' && <form className="admin-section-settings" onSubmit={handleSaveSectionSettings}><div className="admin-section-settings-heading"><div><strong>Section content</strong><p>These fields control the What We Do section heading and introduction.</p></div><button className="admin-primary" disabled={busy}>{busy ? 'Saving…' : 'Save section'}</button></div><div className="admin-fields"><label>Name<input value={sectionSettings.name || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, name: event.target.value }))} maxLength={100} required/></label><label className="span-2">Heading<input value={sectionSettings.heading || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, heading: event.target.value }))} maxLength={180} required/></label><label className="span-2">Description<textarea value={sectionSettings.description || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, description: event.target.value }))} rows={3} maxLength={600} required/></label></div></form>}
         {activeTab === 'projects' && <p className="admin-reorder-hint"><GripVertical size={16}/> Drag a project row to change its website position, or use the arrow buttons.</p>}
-        {activeTab === 'inquiries' ? <div className="admin-inquiries">{filteredItems.length ? filteredItems.map((item) => <article key={item.id} className={`admin-inquiry ${item.status === 'new' ? 'is-new' : ''}`}><div className="admin-inquiry-head"><div><span className={`inquiry-status ${item.status || 'new'}`}>{item.status || 'new'}</span><strong>{item.name}</strong></div><time>{formatDate(item.createdAt)}</time></div><div className="admin-inquiry-contact"><a href={`mailto:${item.email}`}>{item.email}</a>{item.phone && <a href={`tel:${item.phone}`}>{item.phone}</a>}</div>{(item.projectType || item.location || item.budget) && <div className="admin-inquiry-meta">{[item.projectType, item.location, item.budget].filter(Boolean).join(' · ')}</div>}<p>{item.message}</p><div className="admin-inquiry-actions"><button onClick={() => markInquiryStatus(item.id, item.status === 'new' ? 'read' : 'new')}>{item.status === 'new' ? 'Mark as read' : 'Mark as new'}</button><button className="admin-delete" onClick={() => handleDelete(item)}><Trash2 size={14}/> Remove</button></div></article>) : <EmptyState title="No inquiries yet" description="Messages submitted through the website contact form will appear here."/>}</div> : <div className="admin-records">{filteredItems.length ? filteredItems.map((item) => { const projectIndex = records.projects.findIndex((project) => project.id === item.id); const canDrag = activeTab === 'projects' && !search.trim(); return <article className={`admin-record ${canDrag ? 'is-draggable' : ''} ${draggedProjectId === item.id ? 'is-dragging' : ''}`} key={item.id} draggable={canDrag} onDragStart={() => setDraggedProjectId(item.id)} onDragEnd={() => setDraggedProjectId('')} onDragOver={(event) => { if (canDrag) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); if (canDrag) moveProject(draggedProjectId, item.id); }}><div className="admin-record-order">{String(item.order || 0).padStart(2, '0')}</div><div className="admin-record-copy"><strong>{labelFor(item)}</strong><span>{item.category || item.slug || item.role || item.description || 'Content record'}{item.featured ? ' · Featured on home' : ''}</span></div><span className={`admin-publish ${item.published ? 'published' : 'draft'}`}>{item.published ? 'Published' : 'Draft'}</span><div className="admin-record-actions">{activeTab === 'projects' && <><button className="admin-order-button" onClick={() => projectIndex > 0 && moveProject(item.id, records.projects[projectIndex - 1].id)} disabled={projectIndex <= 0} aria-label={`Move ${labelFor(item)} up`}><ArrowUp size={16}/></button><button className="admin-order-button" onClick={() => projectIndex < records.projects.length - 1 && moveProject(item.id, records.projects[projectIndex + 1].id)} disabled={projectIndex >= records.projects.length - 1} aria-label={`Move ${labelFor(item)} down`}><ArrowDown size={16}/></button></>}<button onClick={() => activeTab === 'projects' ? openProjectEditor(item) : setEditing(item)}>Edit</button><button className="admin-delete" onClick={() => handleDelete(item)} aria-label={`Remove ${labelFor(item)}`}><Trash2 size={15}/></button></div></article>}) : <EmptyState title={`No ${activeTab} found`} description="Add a record or clear your search to see available content."/>}</div>}</>}
+        {activeTab === 'inquiries' ? <div className="admin-inquiries">{filteredItems.length ? filteredItems.map((item) => <article key={item.id} className={`admin-inquiry ${item.status === 'new' ? 'is-new' : ''}`}><div className="admin-inquiry-head"><div><span className={`inquiry-status ${item.status || 'new'}`}>{item.status || 'new'}</span><strong>{item.name}</strong></div><time>{formatDate(item.createdAt)}</time></div><div className="admin-inquiry-contact"><a href={`mailto:${item.email}`}>{item.email}</a>{item.phone && <a href={`tel:${item.phone}`}>{item.phone}</a>}</div>{(item.projectType || item.location || item.budget) && <div className="admin-inquiry-meta">{[item.projectType, item.location, item.budget].filter(Boolean).join(' · ')}</div>}<p>{item.message}</p><div className="admin-inquiry-actions"><button onClick={() => markInquiryStatus(item.id, item.status === 'new' ? 'read' : 'new')}>{item.status === 'new' ? 'Mark as read' : 'Mark as new'}</button><button className="admin-delete" onClick={() => handleDelete(item)}><Trash2 size={14}/> Remove</button></div></article>) : <EmptyState title="No inquiries yet" description="Messages submitted through the website contact form will appear here."/>}</div> : <div className="admin-records">{filteredItems.length ? filteredItems.map((item) => { const projectIndex = records.projects.findIndex((project) => project.id === item.id); const canDrag = activeTab === 'projects' && !search.trim(); return <article className={`admin-record ${canDrag ? 'is-draggable' : ''} ${draggedProjectId === item.id ? 'is-dragging' : ''}`} key={item.id} draggable={canDrag} onDragStart={() => setDraggedProjectId(item.id)} onDragEnd={() => setDraggedProjectId('')} onDragOver={(event) => { if (canDrag) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); if (canDrag) moveProject(draggedProjectId, item.id); }}><div className="admin-record-order">{String(item.order || 0).padStart(2, '0')}</div><div className="admin-record-copy"><strong>{labelFor(item)}</strong><span>{item.category || item.location || item.slug || item.role || item.description || 'Content record'}{item.featured ? ' · Featured on home' : ''}</span></div><span className={`admin-publish ${item.published ? 'published' : 'draft'}`}>{item.published ? 'Published' : 'Draft'}</span><div className="admin-record-actions">{activeTab === 'projects' && <><button className="admin-order-button" onClick={() => projectIndex > 0 && moveProject(item.id, records.projects[projectIndex - 1].id)} disabled={projectIndex <= 0} aria-label={`Move ${labelFor(item)} up`}><ArrowUp size={16}/></button><button className="admin-order-button" onClick={() => projectIndex < records.projects.length - 1 && moveProject(item.id, records.projects[projectIndex + 1].id)} disabled={projectIndex >= records.projects.length - 1} aria-label={`Move ${labelFor(item)} down`}><ArrowDown size={16}/></button></>}<button onClick={() => activeTab === 'projects' ? openProjectEditor(item) : setEditing(item)}>Edit</button><button className="admin-delete" onClick={() => handleDelete(item)} aria-label={`Remove ${labelFor(item)}`}><Trash2 size={15}/></button></div></article>}) : <EmptyState title={`No ${activeTab} found`} description="Add a record or clear your search to see available content."/>}</div>}</>}
       </div>
     </section>
 
-    {editing && <div className="admin-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setEditing(null); }}><section className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-editor-title"><header><div><span className="admin-eyebrow">{editing.id ? 'UPDATE CONTENT' : 'NEW CONTENT'}</span><h2 id="admin-editor-title">{editing.id ? 'Edit' : 'Add'} {activeTab === 'categories' ? 'category' : activeTab === 'clients' ? 'client' : activeTab.slice(0, -1)}</h2></div><button className="admin-close" onClick={() => setEditing(null)} aria-label="Close editor"><X size={20}/></button></header><form onSubmit={handleSave}><div className="admin-fields">{editingFields.map((field) => <label key={field.key} className={`${field.type === 'textarea' ? 'span-2' : ''} ${field.type === 'checkbox' ? 'checkbox-field' : ''}`}>{field.type === 'checkbox' ? <><input type="checkbox" name={field.key} defaultChecked={Boolean(editing[field.key])}/><span>{field.label}{field.hint && <small>{field.hint}</small>}</span></> : <>{field.label}{field.type === 'textarea' ? <textarea name={field.key} value={editing[field.key] ?? ''} onChange={(event) => setEditing((current) => ({ ...current, [field.key]: event.target.value }))} required={field.required} rows={field.key === 'description' || field.key === 'quote' ? 4 : 3}/> : field.type === 'select' ? <select name={field.key} value={editing[field.key] || ''} onChange={(event) => setEditing((current) => ({ ...current, category: event.target.value }))} required={field.required}><option value="" disabled>Choose a category</option>{siteCategories.filter((item) => item.published !== false).map((item) => <option key={item.id || item.slug} value={item.name}>{item.name}</option>)}</select> : <input name={field.key} type={field.type || 'text'} {...(field.type === 'number' ? { value: editing[field.key] ?? '', onChange: (event) => setEditing((current) => ({ ...current, [field.key]: event.target.value })) } : { defaultValue: editing[field.key] ?? '' })} required={field.required} min={field.key === 'rating' ? 1 : undefined} max={field.key === 'rating' ? 5 : undefined}/ >}{field.hint && <small>{field.hint}</small>}</>}</label>)}</div>
+    {editing && <div className="admin-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setEditing(null); }}><section className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-editor-title"><header><div><span className="admin-eyebrow">{editing.id ? 'UPDATE CONTENT' : 'NEW CONTENT'}</span><h2 id="admin-editor-title">{editing.id ? 'Edit' : 'Add'} {editingLabel}</h2></div><button className="admin-close" onClick={() => setEditing(null)} aria-label="Close editor"><X size={20}/></button></header><form onSubmit={handleSave}><div className="admin-fields">{editingFields.map((field) => <label key={field.key} className={`${field.type === 'textarea' ? 'span-2' : ''} ${field.type === 'checkbox' ? 'checkbox-field' : ''}`}>{field.type === 'checkbox' ? <><input type="checkbox" name={field.key} defaultChecked={Boolean(editing[field.key])}/><span>{field.label}{field.hint && <small>{field.hint}</small>}</span></> : <>{field.label}{field.type === 'textarea' ? <textarea name={field.key} value={editing[field.key] ?? ''} onChange={(event) => setEditing((current) => ({ ...current, [field.key]: event.target.value }))} required={field.required} rows={field.key === 'description' || field.key === 'quote' ? 4 : 3}/> : field.type === 'select' ? <select name={field.key} value={editing[field.key] || ''} onChange={(event) => setEditing((current) => ({ ...current, [field.key]: event.target.value }))} required={field.required}>{field.options ? field.options.map((option) => <option key={option} value={option}>{option}</option>) : <><option value="" disabled>Choose a category</option>{siteCategories.filter((item) => item.published !== false).map((item) => <option key={item.id || item.slug} value={item.name}>{item.name}</option>)}</>}</select> : <input name={field.key} type={field.type || 'text'} {...(field.type === 'number' ? { value: editing[field.key] ?? '', onChange: (event) => setEditing((current) => ({ ...current, [field.key]: event.target.value })) } : { defaultValue: editing[field.key] ?? '' })} required={field.required} min={field.key === 'rating' ? 1 : undefined} max={field.key === 'rating' ? 5 : undefined}/ >}{field.hint && <small>{field.hint}</small>}</>}</label>)}</div>
       {activeTab === 'projects' && <div className="cloudinary-uploaders"><CloudinaryImageField label="Project images" multiple value={editing.galleryText || ''} onChange={(value) => { const images = value.split('\n').filter(Boolean); setEditing((current) => ({ ...current, galleryText: value, ...(images.length ? { coverImage: images[0], heroImage: images[0] } : {}) })); }}/></div>}
+      {activeTab === 'homeExpertise' && <div className="cloudinary-uploaders"><CloudinaryImageField label="Photo" value={editing.src || ''} onChange={(value) => setEditing((current) => ({ ...current, src: value }))}/></div>}
+      {activeTab === 'aboutTourism' && <div className="cloudinary-uploaders"><CloudinaryImageField label="Photo" value={editing.src || ''} onChange={(value) => setEditing((current) => ({ ...current, src: value }))}/></div>}
       {activeTab === 'clients' && <div className="cloudinary-uploaders"><CloudinaryImageField label="Client logo" value={editing.logoPath || ''} onChange={(value) => setEditing((current) => ({ ...current, logoPath: value }))}/></div>}
       {formError && <div className="admin-error" role="alert">{formError}</div>}<div className="admin-modal-actions"><button type="button" onClick={() => setEditing(null)}>Cancel</button><button className="admin-primary" disabled={busy}>{busy ? 'Saving…' : 'Save changes'}</button></div></form></section></div>}
   </main>;

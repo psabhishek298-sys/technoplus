@@ -11,6 +11,13 @@ service cloud.firestore {
     // clients: name, website, logoPath, published, order, createdAt, updatedAt.
     // testimonials: name, role, location, quote, rating, published, order,
     // createdAt, updatedAt.
+    // homeExpertise: title, location, description, secure Cloudinary photo URL,
+    // published, order, createdAt, updatedAt.
+    // aboutTourism: name, location, description, secure Cloudinary photo URL,
+    // published, order, createdAt, updatedAt.
+    // siteSections/homeExpertise: name, heading, description, published,
+    // createdAt, updatedAt.
+    // siteSections/aboutTourismSeed: internal one-time defaults marker.
     // inquiries: name, email, phone, projectType, location, budget, message,
     // status, createdAt, optional updatedAt. Private: only admins can read.
     // adminUsers/{uid}: enabled boolean. Provisioned manually by the project
@@ -116,6 +123,53 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function validHomeExpertise(data) {
+      return only(data, ['title', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['title', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'title', 1, 120)
+        && boundedString(data, 'location', 1, 160)
+        && boundedString(data, 'description', 1, 800)
+        && boundedString(data, 'src', 1, 700)
+        && data.src.matches('^https://res[.]cloudinary[.]com/.*')
+        && data.published is bool
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validHomeExpertiseSection(data) {
+      return only(data, ['name', 'heading', 'description', 'published', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'heading', 'description', 'published', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 100)
+        && boundedString(data, 'heading', 1, 180)
+        && boundedString(data, 'description', 1, 600)
+        && data.published is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validAboutTourism(data) {
+      return only(data, ['name', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 140)
+        && boundedString(data, 'location', 1, 160)
+        && boundedString(data, 'description', 1, 800)
+        && boundedString(data, 'src', 1, 700)
+        && data.src.matches('^https://res[.]cloudinary[.]com/.*')
+        && data.published is bool
+        && validOrder(data)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validAboutTourismSeed(data) {
+      return only(data, ['defaultsSeeded', 'createdAt', 'updatedAt'])
+        && required(data, ['defaultsSeeded', 'createdAt', 'updatedAt'])
+        && data.defaultsSeeded == true
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     function validInquiry(data) {
       return only(data, ['name', 'email', 'phone', 'projectType', 'location', 'budget', 'message', 'status', 'createdAt', 'updatedAt'])
         && required(data, ['name', 'email', 'phone', 'projectType', 'location', 'budget', 'message', 'status', 'createdAt'])
@@ -173,6 +227,38 @@ service cloud.firestore {
         && validTestimonial(request.resource.data)
         && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isAdmin();
+    }
+
+    match /homeExpertise/{itemId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validHomeExpertise(request.resource.data);
+      allow update: if isAdmin()
+        && validHomeExpertise(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /aboutTourism/{itemId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin() && validAboutTourism(request.resource.data);
+      allow update: if isAdmin()
+        && validAboutTourism(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /siteSections/{sectionId} {
+      allow get: if (sectionId == 'homeExpertise' && (isAdmin() || resource.data.published == true))
+        || (sectionId == 'aboutTourismSeed' && isAdmin());
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && ((sectionId == 'homeExpertise' && validHomeExpertiseSection(request.resource.data))
+          || (sectionId == 'aboutTourismSeed' && validAboutTourismSeed(request.resource.data)));
+      allow update: if isAdmin()
+        && ((sectionId == 'homeExpertise' && validHomeExpertiseSection(request.resource.data))
+          || (sectionId == 'aboutTourismSeed' && validAboutTourismSeed(request.resource.data)))
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin() && sectionId == 'homeExpertise';
     }
 
     match /inquiries/{inquiryId} {

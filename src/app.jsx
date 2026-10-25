@@ -2,11 +2,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { AnimatedStat } from './components/AnimatedStat.jsx';
 import { ClientLogoSection } from './components/ClientLogoSection.jsx';
 import { SiteContentProvider, useSiteContent } from './firebase/SiteContentContext.jsx';
 import AdminPage from './admin/AdminPage.jsx';
-import AccordionGallery from './components/AccordionGallery.jsx';
 import { CinematicList } from './components/CinematicList.jsx';
 import { AboutPage, ContactPage, ProcedurePage, ProjectDetailPage, ProjectsPage } from './pages.jsx';
 import './styles.css';
@@ -94,19 +92,14 @@ function ArchitecturalSketch() {
 }
 
 function HomePage() {
-  const { projects, testimonials } = useSiteContent();
-  const featured = projects.filter(p => p.featured && (p.coverImage || p.heroImage)).slice(0, 5);
+  const { projects, testimonials, homeExpertise, homeExpertiseSection } = useSiteContent();
+  const featured = projects.filter(p => p.featured && (p.coverImage || p.heroImage)).slice(0, 4);
   const reviewColumnSize = Math.ceil(testimonials.length / 3);
   const reviewColumns = [testimonials.slice(0, reviewColumnSize), testimonials.slice(reviewColumnSize, reviewColumnSize * 2), testimonials.slice(reviewColumnSize * 2)];
   return <main><Hero/>
     <section className="intro section-pad" id="intro"><div className="eyebrow"><span className="eyebrow-dot"/> Independent architecture practice <span className="eyebrow-line"/></div><div className="intro-showcase"><div className="intro-content"><h1>We design <em>thoughtful spaces</em> for people and place.</h1><div className="intro-aside"><p>Techno Plus Associates is an architecture practice established in 1990. We create functional, beautiful spaces shaped by the people who use them and the places they belong to.</p><Link className="text-link" to="/about">Discover our practice <ArrowRight/></Link></div></div><div className="intro-image intro-project-image"><img src="https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580234/vrktg5loe7uvc0uefnnt.png" alt="Techno Plus architecture project" loading="lazy"/><span>Spaces that connect people, place and purpose.</span></div></div></section>
-    <section className="projects section-pad" id="projects"><div className="section-heading"><div><span className="eyebrow"><span className="eyebrow-dot"/> Selected work / Kerala</span><h2>Featured<br/><em>Projects</em></h2></div><div className="section-heading-side"><p>Homes, hospitality, commercial spaces and tourism destinations shaped by people and place.</p><Link className="round-link" to="/projects" aria-label="View all projects"><ArrowUpRight/></Link></div></div><AccordionGallery className="home-featured-gallery" items={featured.map((project) => ({ id: project.id, image: project.coverImage || project.heroImage, label: project.title, category: project.category, location: project.location, alt: `${project.title} architecture project`, link: `/projects/${project.slug}` }))} defaultIndex={0} height={520} expandRatio={0.42} gap={10} radius={5} trigger="hover"/></section>
-    <section className="stats section-pad" id="about"><div className="stats-intro"><span className="eyebrow"><span className="eyebrow-dot"/> Our practice</span><h2>Creating with<br/><em>purpose since 1990.</em></h2><p>We combine careful listening, practical expertise and a deep respect for each site to make places that last.</p><Link className="text-link" to="/about">About Techno Plus <ArrowRight/></Link></div><div className="stats-list"><AnimatedStat value={35} label="Years of practice"/><AnimatedStat value={60} label="Built projects"/><AnimatedStat value={15} label="Kerala tourism projects"/><AnimatedStat value={12} label="Cities in India and abroad"/></div></section>
-    <section className="expertise section-pad" id="expertise"><div className="expertise-top"><span className="eyebrow"><span className="eyebrow-dot"/> What we do</span><h2>Spaces with<br/><em>meaning.</em></h2><p>From a family home to a public destination, we bring architecture, interiors and landscape together around real needs.</p></div><CinematicList items={[
-      { id: '01', title: 'Architecture', location: 'Residential · Pattambi, Kerala', description: 'Homes, hospitality, commercial and institutional spaces.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580252/b9bhk7d33d5cht1ood3s.jpg', alt: "Mr. Satheeshan's Residence in Pattambi", to: '/projects/satheeshan-residence' },
-      { id: '02', title: 'Interiors', location: 'Techno Plus · Malappuram', description: 'Warm, considered interiors tailored to everyday life.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580244/k5p8zwaefiofcwgd8yvx.jpg', alt: 'Interior at the Techno Plus office', to: '/projects/technoplus-office-malappuram' },
-      { id: '03', title: 'Tourism & Landscape', location: 'Kundukadavu · Kerala', description: 'Destinations and public places rooted in Kerala.', src: 'https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580247/tx3ydf2088yqh9es3hxe.jpg', alt: 'Kundukadavu tourism destination in Kerala', to: '/projects/kundukadavu-tourism-destination' },
-    ]}/></section>
+    <section className="projects section-pad home-featured-static" id="projects"><div className="section-heading home-featured-heading"><h2>Featured Projects</h2></div><div className="home-featured-grid">{featured.map(project => <Link className="home-featured-card" to={`/projects/${project.slug}`} key={project.id}><img src={project.coverImage || project.heroImage} alt={`${project.title} architecture project`} loading="lazy"/><h3>{project.title}</h3></Link>)}</div></section>
+    <section className="expertise section-pad" id="expertise"><div className="expertise-top"><span className="eyebrow"><span className="eyebrow-dot"/> {homeExpertiseSection.name}</span><h2>{homeExpertiseSection.heading}</h2><p>{homeExpertiseSection.description}</p></div><CinematicList items={homeExpertise.map((item, index) => ({ ...item, id: String(item.order || index + 1).padStart(2, '0'), src: item.src || item.image, to: '/projects' }))}/></section>
     <section className="reviews section-pad" aria-labelledby="reviews-title">
       <div className="reviews-heading">
         <div className="reviews-rating" aria-label={`Rated 4.8 out of 5 from ${testimonials.length} Google reviews`}>
@@ -142,7 +135,7 @@ function MotionEnhancer() {
   const { pathname } = useLocation();
   useEffect(() => {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const selectors = 'main > section, .page-hero-copy, .page-hero-image, .project-card, .wall-card, .stat, .tourism-list span, .story-copy, .story-image, .gallery-grid figure, .contact-detail, .expertise-list a, .reviews-rating';
+    const selectors = 'main > section:not(.home-featured-static), .page-hero-copy, .page-hero-image, .project-card, .wall-card, .stat, .tourism-list span, .story-copy, .story-image, .gallery-grid figure, .contact-detail, .expertise-list a, .reviews-rating';
     const elements = Array.from(document.querySelectorAll(selectors));
     if (reduceMotion || !('IntersectionObserver' in window)) {
       elements.forEach((element) => element.classList.add('motion-reveal', 'is-visible'));
