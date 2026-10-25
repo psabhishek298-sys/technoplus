@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, ChevronLeft, ChevronRight, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
@@ -81,13 +81,33 @@ export function ProjectsPage() {
 export function ProjectDetailPage() {
   const { slug } = useParams();
   const { projects } = useSiteContent();
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
   const project = projects.find(p => p.slug === slug);
+  const gallery = project ? (project.gallery?.length ? project.gallery : [project.heroImage, project.coverImage].filter(Boolean)) : [];
+  useEffect(() => {
+    if (lightboxIndex === null) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setLightboxIndex(null);
+      if (event.key === 'ArrowRight') setLightboxIndex(index => (index + 1) % gallery.length);
+      if (event.key === 'ArrowLeft') setLightboxIndex(index => (index - 1 + gallery.length) % gallery.length);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [lightboxIndex, gallery.length]);
+  useEffect(() => setLightboxZoom(1), [lightboxIndex]);
+  const changeLightboxImage = (direction) => setLightboxIndex(index => (index + direction + gallery.length) % gallery.length);
   if (!project) return <main className="subpage"><PageHero kicker="Project" title="Project" accent="not found."/><section className="section-pad subpage-section"><Link className="text-link" to="/projects"><ArrowLeft/> Back to all projects</Link></section></main>;
-  const gallery = project.gallery?.length ? project.gallery : [project.heroImage, project.coverImage].filter(Boolean);
   return <main className="subpage project-detail"><section className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(0, 0, 0, .55),transparent 66%),url("${project.heroImage || project.coverImage}")`}}><Link className="back-link" to="/projects"><ArrowLeft/> All projects</Link><div className="detail-title"><span className="eyebrow"><span className="eyebrow-dot"/>{project.category} · {project.year || 'Techno Plus project'}</span><h1>{project.title}</h1><span className="detail-location"><MapPin size={15}/>{project.location}</span></div></section>
     <section className="detail-intro section-pad"><div><span className="eyebrow"><span className="eyebrow-dot"/> Project overview</span><h2>{project.tagline}</h2></div><div><p>{project.description}</p>{project.concept && <p>{project.concept}</p>}<div className="detail-facts">{project.area && <span><small>Area</small>{project.area}</span>}{project.status && <span><small>Status</small>{project.status}</span>}{project.year && <span><small>Year</small>{project.year}</span>}</div></div></section>
     {project.materials?.length > 0 && <section className="detail-materials section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Materials & approach</span><div>{project.materials.map(m => <span key={m}>{m}</span>)}</div></section>}
-    <section className="detail-gallery section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Project gallery</span><div className="gallery-grid">{gallery.map((src,i) => <figure key={`${src}-${i}`}><img src={src} alt={`${project.title} view ${i+1}`} loading="lazy"/></figure>)}</div></section>
+    <section className="detail-gallery section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Project gallery · select an image to enlarge</span><div className="gallery-grid">{gallery.map((src,i) => <button className="gallery-image-button" type="button" key={`${src}-${i}`} onClick={() => setLightboxIndex(i)} aria-label={`View ${project.title} image ${i+1} full screen`}><img src={src} alt={`${project.title} view ${i+1}`} loading="lazy"/><span className="gallery-image-hint">View full image</span></button>)}</div></section>
+    {lightboxIndex !== null && <div className="project-lightbox" role="dialog" aria-modal="true" aria-label={`${project.title} photo viewer`} onClick={() => setLightboxIndex(null)}><div className="project-lightbox-toolbar" onClick={event => event.stopPropagation()}><span>{project.title} <small>{lightboxIndex + 1} / {gallery.length}</small></span><div><button type="button" aria-label="Zoom out" onClick={() => setLightboxZoom(zoom => Math.max(1, zoom - .5))} disabled={lightboxZoom <= 1}><ZoomOut/></button><button type="button" aria-label="Zoom in" onClick={() => setLightboxZoom(zoom => Math.min(3, zoom + .5))} disabled={lightboxZoom >= 3}><ZoomIn/></button><button type="button" aria-label="Close image viewer" onClick={() => setLightboxIndex(null)}><X/></button></div></div><button className="project-lightbox-arrow project-lightbox-previous" type="button" aria-label="Previous image" onClick={event => { event.stopPropagation(); changeLightboxImage(-1); }}><ChevronLeft/></button><div className="project-lightbox-stage" onClick={event => event.stopPropagation()} onWheel={event => { if (event.deltaY) setLightboxZoom(zoom => Math.max(1, Math.min(3, zoom + (event.deltaY < 0 ? .2 : -.2)))); }}><img src={gallery[lightboxIndex]} alt={`${project.title} full-size view ${lightboxIndex + 1}`} style={{ transform: `scale(${lightboxZoom})` }} onDoubleClick={() => setLightboxZoom(zoom => zoom === 1 ? 2 : 1)}/></div><button className="project-lightbox-arrow project-lightbox-next" type="button" aria-label="Next image" onClick={event => { event.stopPropagation(); changeLightboxImage(1); }}><ChevronRight/></button><span className="project-lightbox-help">Use + / − to zoom · Esc to close · arrow keys to browse</span></div>}
     <section className="next-step section-pad"><span className="eyebrow"><span className="eyebrow-dot"/> Have a project in mind?</span><Link to="/contact" className="contact-title">Let's talk<ArrowUpRight/></Link><Link className="text-link" to="/projects">Back to all projects <ArrowRight/></Link></section></main>;
 }
 

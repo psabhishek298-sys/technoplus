@@ -32,3 +32,56 @@
 .cinematic-list--tourism .cinematic-list-main{gap:clamp(14px,2vw,26px)}
 .cinematic-list--tourism .cinematic-list-copy strong{font-size:clamp(17px,1.5vw,21px)}
 @media(max-width:700px){.cinematic-list--tourism .cinematic-list-item,.cinematic-list--tourism .cinematic-list-item:hover,.cinematic-list--tourism .cinematic-list-item:focus-visible{height:180px}.cinematic-list--tourism .cinematic-list-image,.cinematic-list--tourism .cinematic-list-item:hover .cinematic-list-image,.cinematic-list--tourism .cinematic-list-item:focus-visible .cinematic-list-image{opacity:.65}}
+
+/* Keep animated list copy readable when tablet widths make each row narrower. */
+@media (max-width: 900px) {
+  .cinematic-list-main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .cinematic-list-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .cinematic-list-copy strong,
+  .cinematic-list-copy small {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+
+  .cinematic-list-content {
+    gap: clamp(10px, 2vw, 18px);
+  }
+
+  .cinematic-list-location {
+    max-width: 24%;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.45;
+  }
+
+  .cinematic-list--tourism .cinematic-list-item,
+  .cinematic-list--tourism .cinematic-list-item:hover,
+  .cinematic-list--tourism .cinematic-list-item:focus-visible {
+    height: 112px;
+  }
+
+  .cinematic-list--tourism .cinematic-list-item:hover,
+  .cinematic-list--tourism .cinematic-list-item:focus-visible {
+    height: 320px;
+  }
+}
+
+@media (max-width: 700px) {
+  .cinematic-list-location {
+    display: none;
+  }
+
+  .cinematic-list--tourism .cinematic-list-item,
+  .cinematic-list--tourism .cinematic-list-item:hover,
+  .cinematic-list--tourism .cinematic-list-item:focus-visible {
+    height: 180px;
+  }
+}

@@ -89,3 +89,39 @@
 @media(prefers-reduced-motion:reduce){.contact-input-wrap,.contact-send-button,.contact-whatsapp-button{transition:none}}
 .contact-hours small{line-height:1.7}
 @media(max-width:700px){.contact-quick-details>.contact-hours{grid-column:1/-1}}
+
+/* Project gallery full-screen image viewer */
+.gallery-image-button{position:relative;display:block;width:100%;min-width:0;height:clamp(230px,38vw,500px);min-height:220px;margin:0;padding:0;overflow:hidden;border:0;background:var(--sand);cursor:zoom-in;text-align:left}
+.gallery-image-button:nth-child(3n + 1){grid-column:span 2;height:clamp(260px,55vw,650px)}
+.gallery-image-button img{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.gallery-image-button:hover img,.gallery-image-button:focus-visible img{transform:scale(1.025)}
+.gallery-image-hint{position:absolute;right:14px;bottom:14px;padding:9px 12px;border-radius:30px;background:rgba(20,20,19,.72);color:#fff;font-size:11px;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s}
+.gallery-image-button:hover .gallery-image-hint,.gallery-image-button:focus-visible .gallery-image-hint{opacity:1;transform:none}
+.project-lightbox{position:fixed;z-index:100;inset:0;display:grid;grid-template:64px minmax(0,1fr) 34px / 64px minmax(0,1fr) 64px;align-items:center;justify-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:rgba(16,16,15,.97);color:#fff}
+.project-lightbox-toolbar{grid-column:1 / -1;display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:10px 20px}
+.project-lightbox-toolbar>span{min-width:0;overflow:hidden;font-size:14px;text-overflow:ellipsis;white-space:nowrap}
+.project-lightbox-toolbar small{margin-left:9px;color:rgba(255,255,255,.68);font-size:12px}
+.project-lightbox-toolbar>div{display:flex;flex:0 0 auto;gap:8px}
+.project-lightbox button{display:grid;width:42px;height:42px;place-items:center;border:1px solid rgba(255,255,255,.38);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;transition:background .2s,border-color .2s}
+.project-lightbox button:hover:not(:disabled),.project-lightbox button:focus-visible{border-color:#fff;background:rgba(255,255,255,.2)}
+.project-lightbox button:disabled{cursor:default;opacity:.4}
+.project-lightbox button svg{width:19px;height:19px}
+.project-lightbox-stage{grid-column:2;grid-row:2;width:100%;height:100%;display:grid;place-items:center;overflow:auto;overscroll-behavior:contain}
+.project-lightbox-stage img{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;transition:transform .2s ease;cursor:zoom-in}
+.project-lightbox-stage img[style*="scale(2)"],.project-lightbox-stage img[style*="scale(2.5)"],.project-lightbox-stage img[style*="scale(3)"]{cursor:zoom-out}
+.project-lightbox-arrow{grid-row:2}
+.project-lightbox-previous{grid-column:1}
+.project-lightbox-next{grid-column:3}
+.project-lightbox-help{grid-column:1 / -1;grid-row:3;color:rgba(255,255,255,.68);font-size:11px;text-align:center}
+@media(max-width:700px){
+  .gallery-image-button,.gallery-image-button:nth-child(3n + 1){height:auto;min-height:0;aspect-ratio:4 / 3}
+  .project-lightbox{grid-template:58px minmax(0,1fr) 30px / 42px minmax(0,1fr) 42px}
+  .project-lightbox-toolbar{padding:8px 10px}
+  .project-lightbox-toolbar>span{font-size:12px}
+  .project-lightbox-toolbar small{font-size:10px}
+  .project-lightbox-toolbar>div{gap:5px}
+  .project-lightbox button{width:34px;height:34px}
+  .project-lightbox button svg{width:17px;height:17px}
+  .project-lightbox-stage img{max-width:100%;max-height:100%}
+  .project-lightbox-help{font-size:9px}
+}
