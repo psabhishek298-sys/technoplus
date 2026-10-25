@@ -148,6 +148,20 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function validAboutHeroSection(data) {
+      return only(data, ['name', 'heading', 'description', 'backgroundImage', 'published', 'createdAt', 'updatedAt'])
+        && required(data, ['name', 'heading', 'description', 'backgroundImage', 'published', 'createdAt', 'updatedAt'])
+        && boundedString(data, 'name', 1, 100)
+        && boundedString(data, 'heading', 1, 180)
+        && boundedString(data, 'description', 1, 600)
+        && boundedString(data, 'backgroundImage', 1, 700)
+        && (data.backgroundImage.matches('^https://res[.]cloudinary[.]com/.*')
+          || data.backgroundImage.matches('^/photos/[A-Za-z0-9._/-]+$'))
+        && data.published is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     function validAboutTourism(data) {
       return only(data, ['name', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
         && required(data, ['name', 'location', 'description', 'src', 'published', 'order', 'createdAt', 'updatedAt'])
@@ -249,13 +263,16 @@ service cloud.firestore {
 
     match /siteSections/{sectionId} {
       allow get: if (sectionId == 'homeExpertise' && (isAdmin() || resource.data.published == true))
+        || (sectionId == 'aboutHero' && (isAdmin() || resource.data.published == true))
         || (sectionId == 'aboutTourismSeed' && isAdmin());
       allow list: if isAdmin();
       allow create: if isAdmin()
         && ((sectionId == 'homeExpertise' && validHomeExpertiseSection(request.resource.data))
+          || (sectionId == 'aboutHero' && validAboutHeroSection(request.resource.data))
           || (sectionId == 'aboutTourismSeed' && validAboutTourismSeed(request.resource.data)));
       allow update: if isAdmin()
         && ((sectionId == 'homeExpertise' && validHomeExpertiseSection(request.resource.data))
+          || (sectionId == 'aboutHero' && validAboutHeroSection(request.resource.data))
           || (sectionId == 'aboutTourismSeed' && validAboutTourismSeed(request.resource.data)))
         && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isAdmin() && sectionId == 'homeExpertise';

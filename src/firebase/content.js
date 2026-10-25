@@ -9,6 +9,7 @@ import { GOOGLE_TESTIMONIALS } from '../data/testimonials.ts';
 import { DEFAULT_CLIENTS } from '../data/clients.js';
 import { DEFAULT_HOME_EXPERTISE_ITEMS, DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
 import { DEFAULT_ABOUT_TOURISM_ITEMS } from '../data/aboutTourism.js';
+import { DEFAULT_ABOUT_HERO } from '../data/aboutHero.js';
 
 export const CONTENT_COLLECTIONS = ['projects', 'categories', 'clients', 'testimonials', 'homeExpertise', 'aboutTourism', 'inquiries'];
 
@@ -80,9 +81,24 @@ export async function saveSectionSettings(sectionId, value) {
     description: String(value.description || ''),
     published: true,
     updatedAt: serverTimestamp(),
+    ...(sectionId === 'aboutHero' ? { backgroundImage: String(value.backgroundImage || '') } : {}),
   };
   if (snapshot.exists()) return setDoc(ref, { ...payload, createdAt: snapshot.data().createdAt || serverTimestamp() });
   return setDoc(ref, { ...payload, createdAt: serverTimestamp() });
+}
+
+export async function ensureAboutHeroDefaults() {
+  if (!db) throw new Error('Firebase is not configured yet.');
+  const ref = doc(db, 'siteSections', 'aboutHero');
+  const snapshot = await getDoc(ref);
+  if (snapshot.exists()) return false;
+  const timestamp = serverTimestamp();
+  await setDoc(ref, {
+    ...DEFAULT_ABOUT_HERO,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  });
+  return true;
 }
 
 export async function ensureHomeExpertiseDefaults() {

@@ -793,6 +793,124 @@ iframe {
   padding-top: clamp(108px, 11vh, 132px);
 }
 
+/* Let the projects landing photo fill its hero like the About page background. */
+.work-index .projects-landing-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  min-height: 100svh;
+  padding: clamp(130px, 17vh, 190px) var(--gutter) 90px;
+  overflow: hidden;
+  background: #3f403c;
+  color: #fff;
+}
+
+.work-index .projects-landing-copy {
+  z-index: 3;
+  width: min(58%, 760px);
+  max-width: 760px;
+  color: #fff;
+}
+
+.work-index .projects-landing-copy h1,
+.work-index .projects-landing-copy h1 em,
+.work-index .projects-landing-copy > p,
+.work-index .projects-landing-copy .eyebrow,
+.work-index .projects-landing-actions > span {
+  color: #fff;
+}
+
+.work-index .projects-landing-copy h1 em,
+.work-index .projects-landing-actions > span {
+  opacity: .82;
+}
+
+.work-index .projects-landing-actions .projects-hero-link {
+  border-color: rgba(255, 255, 255, .75);
+  color: #fff;
+}
+
+.work-index .projects-landing-visual {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  padding: 0;
+}
+
+.work-index .projects-landing-image-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  box-shadow: none;
+}
+
+.work-index .projects-landing-image-frame::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, rgba(20, 20, 19, .76), rgba(20, 20, 19, .3)), linear-gradient(0deg, rgba(20, 20, 19, .45), transparent 46%);
+  pointer-events: none;
+}
+
+.work-index .projects-landing-shade {
+  display: none;
+}
+
+.work-index .projects-landing-caption {
+  z-index: 2;
+}
+
+.work-index .projects-landing-peek {
+  display: none;
+}
+
+.work-index .projects-landing-controls {
+  z-index: 3;
+  right: var(--gutter);
+  bottom: 24px;
+}
+
+.work-index .projects-landing-controls > button:not(.projects-landing-next) span {
+  background: rgba(255, 255, 255, .55);
+}
+
+.work-index .projects-landing-controls > button.is-active:not(.projects-landing-next) span {
+  background: #fff;
+}
+
+.work-index .projects-landing-controls .projects-landing-next {
+  border-color: rgba(255, 255, 255, .72);
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .work-index .projects-landing-hero {
+    min-height: 100svh;
+    padding: max(128px, calc(env(safe-area-inset-top) + 112px)) var(--gutter) 96px;
+    align-items: center;
+  }
+
+  .work-index .projects-landing-copy {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .work-index .projects-landing-visual {
+    padding: 0;
+  }
+
+  .work-index .projects-landing-image-frame {
+    height: 100%;
+  }
+
+  .work-index .projects-landing-controls {
+    right: var(--gutter);
+    bottom: 16px;
+  }
+}
+
 @media (min-width: 701px) {
   .page-hero {
     padding-top: clamp(130px, 14vh, 165px);

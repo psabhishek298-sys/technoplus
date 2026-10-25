@@ -4,6 +4,7 @@ import { DEFAULT_CATEGORIES } from '../data/categories.ts';
 import { GOOGLE_TESTIMONIALS } from '../data/testimonials.ts';
 import { DEFAULT_HOME_EXPERTISE_ITEMS, DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
 import { DEFAULT_ABOUT_TOURISM_ITEMS } from '../data/aboutTourism.js';
+import { DEFAULT_ABOUT_HERO } from '../data/aboutHero.js';
 import { DEFAULT_CLIENTS } from '../data/clients.js';
 import { firebaseReady } from './config.js';
 
@@ -17,6 +18,7 @@ export function SiteContentProvider({ children }) {
   const [homeExpertise, setHomeExpertise] = useState(DEFAULT_HOME_EXPERTISE_ITEMS);
   const [homeExpertiseSection, setHomeExpertiseSection] = useState(DEFAULT_HOME_EXPERTISE_SECTION);
   const [aboutTourism, setAboutTourism] = useState(DEFAULT_ABOUT_TOURISM_ITEMS);
+  const [aboutHero, setAboutHero] = useState(DEFAULT_ABOUT_HERO);
 
   useEffect(() => {
     if (!firebaseReady) return undefined;
@@ -35,6 +37,9 @@ export function SiteContentProvider({ children }) {
         subscribeSectionSettings('homeExpertise', (settings) => {
           setHomeExpertiseSection(settings || DEFAULT_HOME_EXPERTISE_SECTION);
         }, (error) => console.warn('Could not load home section settings:', error)),
+        subscribeSectionSettings('aboutHero', (settings) => {
+          if (settings?.backgroundImage) setAboutHero({ ...DEFAULT_ABOUT_HERO, ...settings });
+        }, (error) => console.warn('Could not load About hero settings:', error)),
       );
     }).catch((error) => console.warn('Could not initialize public content:', error));
     return () => {
@@ -43,7 +48,7 @@ export function SiteContentProvider({ children }) {
     };
   }, []);
 
-  const value = useMemo(() => ({ projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism }), [projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism]);
+  const value = useMemo(() => ({ projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism, aboutHero }), [projects, categories, clients, testimonials, homeExpertise, homeExpertiseSection, aboutTourism, aboutHero]);
   return <SiteContentContext.Provider value={value}>{children}</SiteContentContext.Provider>;
 }
 

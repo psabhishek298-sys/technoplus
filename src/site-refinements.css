@@ -190,3 +190,57 @@ main h1,main h2,main .contact-title,main .projects-landing-caption strong,main .
   .footer-bottom{margin-top:22px;font-size:10px}
   .footer-bottom>span:nth-child(2){font-size:12px}
 }
+.about-page-hero {
+  min-height: 100svh;
+  background-color: #3F403C;
+  background-size: cover;
+  background-position: center;
+}
+
+.about-page-hero .page-hero-copy {
+  width: min(62%, 760px);
+  color: #fff;
+}
+
+.about-page-hero .page-hero-copy .eyebrow,
+.about-page-hero .page-hero-copy h1,
+.about-page-hero .page-hero-copy h1 em,
+.about-page-hero .page-hero-copy > p {
+  color: #fff;
+}
+
+.about-page-hero .page-hero-copy .eyebrow-dot,
+.about-page-hero .page-hero-copy .eyebrow-line {
+  background: #fff;
+}
+
+.process-page-hero {
+  min-height: min(82svh, 900px);
+  background-color: #3F403C;
+  background-size: cover;
+  background-position: center 52%;
+}
+
+.process-page-hero .page-hero-copy,
+.process-page-hero .page-hero-copy .eyebrow,
+.process-page-hero .page-hero-copy h1,
+.process-page-hero .page-hero-copy h1 em,
+.process-page-hero .page-hero-copy > p {
+  color: #fff;
+}
+
+.process-page-hero .page-hero-copy .eyebrow-dot,
+.process-page-hero .page-hero-copy .eyebrow-line {
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .about-page-hero {
+    min-height: 100svh;
+    background-position: center;
+  }
+
+  .about-page-hero .page-hero-copy {
+    width: 100%;
+  }
+}

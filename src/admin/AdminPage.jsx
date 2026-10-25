@@ -4,8 +4,9 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { getDoc } from 'firebase/firestore';
 import { ArrowDown, ArrowLeft, ArrowUp, BriefcaseBusiness, Building2, FolderKanban, GripVertical, LogOut, MessageSquareQuote, Plus, Search, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 import { auth, db, firebaseReady } from '../firebase/client.js';
-import { docRef, ensureAboutTourismDefaults, ensureHomeExpertiseDefaults, importCurrentSiteContent, markInquiryStatus, removeContent, saveContent, saveContentOrder, saveSectionSettings, subscribeAdminContent, subscribeSectionSettings } from '../firebase/content.js';
+import { docRef, ensureAboutHeroDefaults, ensureAboutTourismDefaults, ensureHomeExpertiseDefaults, importCurrentSiteContent, markInquiryStatus, removeContent, saveContent, saveContentOrder, saveSectionSettings, subscribeAdminContent, subscribeSectionSettings } from '../firebase/content.js';
 import { DEFAULT_HOME_EXPERTISE_SECTION } from '../data/homeExpertise.js';
+import { DEFAULT_ABOUT_HERO } from '../data/aboutHero.js';
 import { useSiteContent } from '../firebase/SiteContentContext.jsx';
 import CloudinaryImageField from './CloudinaryImageField.jsx';
 import './admin.css';
@@ -72,6 +73,7 @@ export default function AdminPage() {
   const [formError, setFormError] = useState('');
   const [notice, setNotice] = useState('');
   const [sectionSettings, setSectionSettings] = useState(DEFAULT_HOME_EXPERTISE_SECTION);
+  const [aboutHeroSettings, setAboutHeroSettings] = useState(DEFAULT_ABOUT_HERO);
   const [draggedProjectId, setDraggedProjectId] = useState('');
   const syncedUser = useRef('');
   const { categories: siteCategories } = useSiteContent();
@@ -116,14 +118,17 @@ export default function AdminPage() {
     const settingsStop = subscribeSectionSettings('homeExpertise', (settings) => {
       if (settings) setSectionSettings(settings);
     }, (error) => setNotice(error.message || 'Could not load home section settings.'));
-    return () => { unsubscribe.forEach((stop) => stop()); settingsStop(); };
+    const aboutHeroStop = subscribeSectionSettings('aboutHero', (settings) => {
+      if (settings) setAboutHeroSettings({ ...DEFAULT_ABOUT_HERO, ...settings });
+    }, (error) => setNotice(error.message || 'Could not load About hero settings.'));
+    return () => { unsubscribe.forEach((stop) => stop()); settingsStop(); aboutHeroStop(); };
   }, [authState]);
 
   useEffect(() => {
     if (authState !== 'admin' || !adminUser?.uid || syncedUser.current === adminUser.uid) return;
     syncedUser.current = adminUser.uid;
     let active = true;
-    Promise.all([importCurrentSiteContent(), ensureHomeExpertiseDefaults(), ensureAboutTourismDefaults()]).then(([imported]) => {
+    Promise.all([importCurrentSiteContent(), ensureHomeExpertiseDefaults(), ensureAboutTourismDefaults(), ensureAboutHeroDefaults()]).then(([imported]) => {
       if (!active) return;
       setNotice(imported
         ? `Added ${imported} existing website records to Admin. Nothing was removed or overwritten.`
@@ -263,6 +268,20 @@ export default function AdminPage() {
     }
   };
 
+  const handleSaveAboutHero = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    setNotice('');
+    try {
+      await saveSectionSettings('aboutHero', aboutHeroSettings);
+      setNotice('About hero image saved to Firestore.');
+    } catch (error) {
+      setNotice(error.message || 'Could not save the About hero image.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openProjectEditor = (item) => {
     const gallery = String(item.galleryText || '').split('\n').map((url) => url.trim()).filter(Boolean);
     if (item.coverImage && !gallery.includes(item.coverImage)) gallery.unshift(item.coverImage);
@@ -349,6 +368,7 @@ export default function AdminPage() {
         {notice && <div className="admin-notice" role="status">{notice}<button onClick={() => setNotice('')} aria-label="Dismiss"><X size={15}/></button></div>}
         {activeTab !== 'overview' && <><div className="admin-list-heading"><div><h2>{TABS.find((tab) => tab.id === activeTab)?.label}</h2><p>{activeTab === 'inquiries' ? 'Private contact messages. Only approved admins can read them.' : activeTab === 'homeExpertise' ? 'Edit the homepage section and manage its service cards.' : activeTab === 'aboutTourism' ? 'Manage the destinations shown in the About page tourism section.' : 'Only published records appear on the public website.'}</p></div><label className="admin-search"><Search size={16}/><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Search ${activeTab}…`}/></label></div>
         {activeTab === 'homeExpertise' && <form className="admin-section-settings" onSubmit={handleSaveSectionSettings}><div className="admin-section-settings-heading"><div><strong>Section content</strong><p>These fields control the What We Do section heading and introduction.</p></div><button className="admin-primary" disabled={busy}>{busy ? 'Saving…' : 'Save section'}</button></div><div className="admin-fields"><label>Name<input value={sectionSettings.name || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, name: event.target.value }))} maxLength={100} required/></label><label className="span-2">Heading<input value={sectionSettings.heading || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, heading: event.target.value }))} maxLength={180} required/></label><label className="span-2">Description<textarea value={sectionSettings.description || ''} onChange={(event) => setSectionSettings((current) => ({ ...current, description: event.target.value }))} rows={3} maxLength={600} required/></label></div></form>}
+        {activeTab === 'aboutTourism' && <form className="admin-section-settings" onSubmit={handleSaveAboutHero}><div className="admin-section-settings-heading"><div><strong>About page hero background</strong><p>Upload or replace the full-width background image. The selected image URL is saved in Firestore.</p></div><button className="admin-primary" disabled={busy}>{busy ? 'Saving…' : 'Save image'}</button></div><div className="cloudinary-uploaders"><CloudinaryImageField label="About hero background" value={aboutHeroSettings.backgroundImage || ''} onChange={(value) => setAboutHeroSettings((current) => ({ ...current, backgroundImage: value }))}/></div></form>}
         {activeTab === 'projects' && <p className="admin-reorder-hint"><GripVertical size={16}/> Drag a project row to change its website position, or use the arrow buttons.</p>}
         {activeTab === 'inquiries' ? <div className="admin-inquiries">{filteredItems.length ? filteredItems.map((item) => <article key={item.id} className={`admin-inquiry ${item.status === 'new' ? 'is-new' : ''}`}><div className="admin-inquiry-head"><div><span className={`inquiry-status ${item.status || 'new'}`}>{item.status || 'new'}</span><strong>{item.name}</strong></div><time>{formatDate(item.createdAt)}</time></div><div className="admin-inquiry-contact"><a href={`mailto:${item.email}`}>{item.email}</a>{item.phone && <a href={`tel:${item.phone}`}>{item.phone}</a>}</div>{(item.projectType || item.location || item.budget) && <div className="admin-inquiry-meta">{[item.projectType, item.location, item.budget].filter(Boolean).join(' · ')}</div>}<p>{item.message}</p><div className="admin-inquiry-actions"><button onClick={() => markInquiryStatus(item.id, item.status === 'new' ? 'read' : 'new')}>{item.status === 'new' ? 'Mark as read' : 'Mark as new'}</button><button className="admin-delete" onClick={() => handleDelete(item)}><Trash2 size={14}/> Remove</button></div></article>) : <EmptyState title="No inquiries yet" description="Messages submitted through the website contact form will appear here."/>}</div> : <div className="admin-records">{filteredItems.length ? filteredItems.map((item) => { const projectIndex = records.projects.findIndex((project) => project.id === item.id); const canDrag = activeTab === 'projects' && !search.trim(); return <article className={`admin-record ${canDrag ? 'is-draggable' : ''} ${draggedProjectId === item.id ? 'is-dragging' : ''}`} key={item.id} draggable={canDrag} onDragStart={() => setDraggedProjectId(item.id)} onDragEnd={() => setDraggedProjectId('')} onDragOver={(event) => { if (canDrag) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); if (canDrag) moveProject(draggedProjectId, item.id); }}><div className="admin-record-order">{String(item.order || 0).padStart(2, '0')}</div><div className="admin-record-copy"><strong>{labelFor(item)}</strong><span>{item.category || item.location || item.slug || item.role || item.description || 'Content record'}{item.featured ? ' · Featured on home' : ''}</span></div><span className={`admin-publish ${item.published ? 'published' : 'draft'}`}>{item.published ? 'Published' : 'Draft'}</span><div className="admin-record-actions">{activeTab === 'projects' && <><button className="admin-order-button" onClick={() => projectIndex > 0 && moveProject(item.id, records.projects[projectIndex - 1].id)} disabled={projectIndex <= 0} aria-label={`Move ${labelFor(item)} up`}><ArrowUp size={16}/></button><button className="admin-order-button" onClick={() => projectIndex < records.projects.length - 1 && moveProject(item.id, records.projects[projectIndex + 1].id)} disabled={projectIndex >= records.projects.length - 1} aria-label={`Move ${labelFor(item)} down`}><ArrowDown size={16}/></button></>}<button onClick={() => activeTab === 'projects' ? openProjectEditor(item) : setEditing(item)}>Edit</button><button className="admin-delete" onClick={() => handleDelete(item)} aria-label={`Remove ${labelFor(item)}`}><Trash2 size={15}/></button></div></article>}) : <EmptyState title={`No ${activeTab} found`} description="Add a record or clear your search to see available content."/>}</div>}</>}
       </div>
