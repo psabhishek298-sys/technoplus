@@ -148,5 +148,5 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 .contact-sketch .sketch-artwork{height:100%;max-width:100%;margin:0 0 0 auto}
 .contact-sketch .sketch-caption{display:none}
 @media(min-width:1200px){.contact-sketch{margin-right:calc((1250px - 100vw)/2)}}
-@media(max-width:700px){.intro-showcase .intro-project-image{height:clamp(235px,65vw,380px);min-height:0;margin-top:28px}.contact-main{grid-template-columns:minmax(0,1fr);gap:0;align-items:start;min-height:0;margin:18px 0 22px}.contact-main .contact-title{font-size:clamp(54px,12vw,86px);margin:16px 0}.contact-sketch{width:45%;min-width:150px;height:145px;justify-self:end;margin-top:-8px}}
+@media(max-width:700px){.intro-showcase .intro-project-image{height:clamp(235px,65vw,380px);min-height:0;margin-top:28px}.contact-main{grid-template-columns:minmax(0,1fr);gap:0;align-items:start;min-height:0;margin:18px 0 22px}.contact-main .contact-title{font-size:clamp(54px,12vw,86px);margin:16px 0}.contact-sketch{width:100%;height:clamp(190px,54vw,260px);justify-self:stretch;margin:0}.contact-sketch .sketch-artwork{height:100%;max-width:100%;margin:0 0 0 auto}}
 @media(prefers-reduced-motion:reduce){.stat::after{display:none}}
