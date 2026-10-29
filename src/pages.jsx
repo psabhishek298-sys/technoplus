@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, ChevronLeft, ChevronRight, Clock3, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, Video, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Building2, ChevronLeft, ChevronRight, House, Hotel, Landmark, Mail, MapPin, MessageCircle, MessageSquare, Phone, Trees, UserRound, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatedStat } from './components/AnimatedStat.jsx';
@@ -219,8 +219,6 @@ export function ContactPage() {
             <div><i><MapPin size={17}/></i><span><strong>TechnoPlus Associates</strong><small>Munduparamba, Malappuram</small></span></div>
             <div><i><Mail size={17}/></i><span><strong>Email</strong><a href="mailto:info@technoplus.in">info@technoplus.in</a></span></div>
             <div><i><Phone size={17}/></i><span><strong>Call directly</strong><a href="tel:+919037000619">+91 9037 00 0619</a></span></div>
-            <div><i><Video size={17}/></i><span><strong>Skype</strong><small>technoplus</small></span></div>
-            <div className="contact-hours"><i><Clock3 size={17}/></i><span><strong>Work hours</strong><small>Monday – Friday: 08h00 – 17h30<br/>Saturday: 08h00 – 12h00<br/>Sunday: Off work</small></span></div>
           </div>
         </div>
         {firebaseReady ? <form className="contact-message-card" onSubmit={handleInquiry}>

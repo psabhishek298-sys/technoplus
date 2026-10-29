@@ -789,6 +789,56 @@ iframe {
   }
 }
 
+/* Match the regular typography used by the other sections on compact screens. */
+@media (max-width: 1023px) {
+  :is(.expertise, .tourism-section) .cinematic-list-item,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible {
+    height: auto !important;
+    min-height: 84px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy strong {
+    color: #000 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0;
+    line-height: 1.55 !important;
+    text-shadow: none !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy small {
+    color: #000 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 1.55 !important;
+    text-shadow: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy strong {
+    font-family: CityBlueprint, sans-serif !important;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-copy small {
+    font-family: CityBlueprint, sans-serif !important;
+    font-weight: 400 !important;
+  }
+}
+
 .projects-landing-hero {
   padding-top: clamp(108px, 11vh, 132px);
 }

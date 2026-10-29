@@ -33,6 +33,61 @@
 .cinematic-list--tourism .cinematic-list-copy strong{font-size:clamp(17px,1.5vw,21px)}
 @media(max-width:700px){.cinematic-list--tourism .cinematic-list-item,.cinematic-list--tourism .cinematic-list-item:hover,.cinematic-list--tourism .cinematic-list-item:focus-visible{height:180px}.cinematic-list--tourism .cinematic-list-image,.cinematic-list--tourism .cinematic-list-item:hover .cinematic-list-image,.cinematic-list--tourism .cinematic-list-item:focus-visible .cinematic-list-image{opacity:.65}}
 
+/* Keep the home/about lists readable at tablet and phone widths; reserve the cinematic image reveal for desktop. */
+@media (max-width: 1023px) {
+  :is(.expertise, .tourism-section) .cinematic-list-item,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible {
+    height: auto;
+    min-height: 96px;
+    padding: 16px 0;
+    color: var(--ink);
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-image,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-image,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-image {
+    display: none;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-content,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-content,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-content {
+    align-items: center;
+    padding: 0 12px;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-main,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-main,
+  :is(.expertise, .tourism-section) .cinematic-list-item:focus-visible .cinematic-list-main {
+    align-items: center;
+    gap: 14px;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-id,
+  :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-copy small,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-id,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy strong,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-copy small {
+    color: var(--ink);
+    text-shadow: none;
+    transform: none;
+  }
+
+  :is(.expertise, .tourism-section) .cinematic-list-copy small { font-size: 14px; }
+  :is(.expertise, .tourism-section) .cinematic-list-arrow,
+  :is(.expertise, .tourism-section) .cinematic-list-item:hover .cinematic-list-arrow {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    border-color: rgba(63, 64, 60, .35);
+    color: var(--ink);
+    background: transparent;
+    transform: none;
+  }
+}
+
 /* Keep animated list copy readable when tablet widths make each row narrower. */
 @media (max-width: 900px) {
   .cinematic-list-main {

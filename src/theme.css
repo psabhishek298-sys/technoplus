@@ -1,8 +1,8 @@
-/* Site palette: porcelain, warm stone and charcoal. */
+/* Site palette: clean white surfaces with charcoal text. */
 :root{
   --ink:#3F403C;
   --paper:#FFFFFF;
-  --sand:#E0DAC9;
+  --sand:#FFFFFF;
   --rose:#3F403C;
   --white:#FFFFFF;
   --palette-border:rgba(63,64,60,.22);
@@ -20,16 +20,16 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
   color:var(--ink);
 }
 .header,.header.header-light{background:transparent}
-.footer{background:#3F403C;color:#FFFFFF}
+.footer{background:#FFFFFF;color:var(--ink)}
 .splash,.menu-panel,.admin-sidebar{background:var(--sand);color:var(--ink)}
 .menu-links a,.menu-footer,.splash,.splash .skip,.admin-sidebar nav button,
 .admin-sidebar-bottom a,.admin-sidebar-bottom span{color:var(--ink)}
 .menu-label,.footer-links span{color:var(--ink)}
 .splash-logo{filter:brightness(0)}
-.footer .brand-logo{filter:brightness(0) invert(1)}
-.footer-brand p,.footer-links a,.footer-bottom,.footer-bottom a{color:#FFFFFF}
-.footer-links a:hover,.footer-links span{color:var(--sand)}
-.footer-bottom{border-color:rgba(255,255,255,.35)}
+.footer .brand-logo{filter:brightness(0)}
+.footer-brand p,.footer-links a,.footer-bottom,.footer-bottom a{color:var(--ink)}
+.footer-links a:hover,.footer-links span{color:rgba(63,64,60,.68)}
+.footer-bottom{border-color:var(--palette-border)}
 .splash-symbol i{border-color:var(--ink)}
 .load-track{background:rgba(63,64,60,.2)}
 .load-track i,.eyebrow-dot{background:var(--ink)}
@@ -55,7 +55,7 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 }
 .projects-filter-row .filter-chip{background:rgba(255,255,255,.94);color:var(--ink)}
 .projects-filter-row .filter-chip:hover{background:var(--ink);color:#FFFFFF}
-.projects-filter-image{background-image:linear-gradient(90deg,rgba(224,218,201,.94),rgba(224,218,201,.12)),url('https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580239/mlgya85mhqmoapbmv93a.jpg')}
+.projects-filter-image{background-image:linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.12)),url('https://res.cloudinary.com/vpi7w3h5/image/upload/f_auto,q_auto/v1792580239/mlgya85mhqmoapbmv93a.jpg')}
 .wall-card-category,.featured-project-category{background:rgba(63,64,60,.72)}
 .wall-card-caption small svg,.review-stars,.reviews .review-stars,.reviews-rating small b{color:#FFFFFF;fill:#FFFFFF}
 .wall-card:hover .wall-card-caption i,.featured-project-link:hover .featured-project-meta i{
@@ -116,7 +116,7 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 .admin-record-actions button.admin-delete,.admin-inquiry-actions button.admin-delete,
 .cloudinary-image-item button{color:var(--ink)}
 .contact-landing{background-color:var(--sand)}
-.contact-landing::before{background:linear-gradient(90deg,rgba(224,218,201,.97) 0%,rgba(224,218,201,.91) 27%,rgba(224,218,201,.58) 48%,rgba(224,218,201,.12) 78%),linear-gradient(0deg,rgba(63,64,60,.18),transparent 32%)}
+.contact-landing::before{background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.91) 27%,rgba(255,255,255,.58) 48%,rgba(255,255,255,.12) 78%),linear-gradient(0deg,rgba(63,64,60,.12),transparent 32%)}
 .contact-message-card,.contact-map-card{border-color:rgba(255,255,255,.9)}
 .contact-form-kicker i{background:rgba(63,64,60,.35)}
 .contact-form-status.is-success{color:var(--ink)}
@@ -131,8 +131,12 @@ body,#root,.subpage,.admin-page,.admin-workspace,.intro,.expertise,.stats,.team,
 }
 .client-logos-heading h2,.client-logos-heading h2 em{color:var(--ink)}
 .client-logos .eyebrow-dot{background:var(--ink)}
-.logoloop{--logoloop-fadeColorAuto:#E0DAC9}
+.logoloop{--logoloop-fadeColorAuto:#FFFFFF}
 ::selection{background:var(--ink);color:#FFFFFF}
+
+/* The primary site surfaces stay white; reserve white text for image overlays. */
+.contact .contact-title em,.next-step .contact-title em{color:var(--ink)}
+.footer-links span,.footer-bottom{color:var(--ink)}
 
 /* Preserve the existing sketch and contact composition while changing its palette. */
 .intro-showcase{align-items:stretch}
