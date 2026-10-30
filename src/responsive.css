@@ -1089,3 +1089,26 @@ iframe {
     font-size: clamp(8px, 2.6vw, 11px);
   }
 }
+
+/* Use Cormorant Garamond for paragraphs across the site only. */
+#root p {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+}
+
+/* Reassert the original CityBlueprint display text after the site-wide copy font override. */
+#root h1,
+#root h2,
+#root .contact-title,
+#root .projects-landing-caption strong,
+#root .ag-panel__text strong,
+#root .expanding-card-title {
+  font-family: 'CityBlueprint', sans-serif !important;
+}
+
+@media (max-width: 700px) {
+  #root :is(.expertise, .tourism-section) .cinematic-list-copy strong,
+  #root :is(.expertise, .tourism-section) .cinematic-list-copy small {
+    font-family: 'CityBlueprint', sans-serif !important;
+  }
+}
+
