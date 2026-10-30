@@ -1090,9 +1090,9 @@ iframe {
   }
 }
 
-/* Use Cormorant Garamond for paragraphs across the site only. */
+/* Use Architects Daughter for paragraphs across the site only. */
 #root p {
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-family: 'Architects Daughter', cursive !important;
 }
 
 /* Reassert the original CityBlueprint display text after the site-wide copy font override. */
